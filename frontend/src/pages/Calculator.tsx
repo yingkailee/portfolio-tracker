@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import type { CalculationResponse } from '../types';
-import { calculateProjection } from '../api';
+import type { CalculationResponse, Portfolio, Fund } from '../types';
+import { calculateProjection, fetchPortfolios, fetchFunds, calculatePortfolioYield } from '../api';
 
 const fmt = (v: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v);
+const USER_ID = 1;
 
 const Slider = ({ label, value, onChange, min, max, step, format }: {
   label: string; value: number; onChange: (v: number) => void;
@@ -16,13 +17,32 @@ const Slider = ({ label, value, onChange, min, max, step, format }: {
 );
 
 export default function Calculator() {
+  const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
+  const [funds, setFunds] = useState<Fund[]>([]);
+  const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(null);
+  const [manualYield, setManualYield] = useState(false);
   const [capital, setCapital] = useState(100000);
   const [savings, setSavings] = useState(20000);
   const [years, setYears] = useState(20);
   const [yield_, setYield] = useState(10.5);
   const [result, setResult] = useState<CalculationResponse | null>(null);
 
-  useEffect(() => { const y = localStorage.getItem('portfolioYield'); if (y) setYield(+y); }, []);
+  useEffect(() => {
+    Promise.all([fetchPortfolios(USER_ID), fetchFunds()]).then(([p, f]) => {
+      setPortfolios(p);
+      setFunds(f);
+      if (p.length) loadPortfolio(p[0], f);
+    });
+  }, []);
+
+  const loadPortfolio = (p: Portfolio, f: Fund[]) => {
+    setSelectedPortfolio(p);
+    const allocs = JSON.parse(p.allocations);
+    setSelectedPortfolio(p);
+    setManualYield(false);
+    const y = calculatePortfolioYield(f, allocs);
+    setYield(y);
+  };
 
   useEffect(() => {
     const id = setTimeout(() => calculateProjection({ initialCapital: capital, yearlySavings: savings, timeHorizonYears: years, portfolioYield: yield_ }).then(setResult), 300);
@@ -34,6 +54,19 @@ export default function Calculator() {
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
         <h1>Calculator</h1>
         <Link to="/portfolio" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>← Portfolio</Link>
+      </div>
+
+      <div style={{ marginBottom: 20 }}>
+        <label>Portfolio: </label>
+        <select value={manualYield ? '' : selectedPortfolio?.id || ''} onChange={e => {
+          if (!e.target.value) { setManualYield(true); setSelectedPortfolio(null); return; }
+          const p = portfolios.find(p => p.id === +e.target.value);
+          if (p) loadPortfolio(p, funds);
+        }}>
+          <option value="">-- manual --</option>
+          {portfolios.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+        </select>
+        {selectedPortfolio && <span style={{ marginLeft: 10, color: '#666' }}>(yield: {yield_.toFixed(2)}%)</span>}
       </div>
 
       <Slider label="Initial Capital" value={capital} onChange={setCapital} min={0} max={1000000} step={10000} format={fmt} />
