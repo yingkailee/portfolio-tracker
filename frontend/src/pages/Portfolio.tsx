@@ -14,7 +14,7 @@ export default function Portfolio() {
   const [name, setName] = useState('');
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [error, setError] = useState('');
-  const [saved, setSaved] = useState(false);
+  const [savedMsg, setSavedMsg] = useState('');
 
   useEffect(() => {
     Promise.all([fetchFunds(), fetchPortfolios(USER_ID)]).then(([f, p]) => {
@@ -28,11 +28,17 @@ export default function Portfolio() {
     setAllocations(JSON.parse(p.allocations));
     setName(p.name);
     setSelectedId(p.id);
-    setSaved(false);
+    setSavedMsg('');
   };
 
   const handleAllocationChange = (ticker: string, value: number) => {
     setAllocations(prev => ({ ...prev, [ticker]: value / 100 }));
+    setSavedMsg('');
+  };
+
+  const handleNameChange = (newName: string) => {
+    setName(newName);
+    setSavedMsg('');
   };
 
   const portfolioYield = calculatePortfolioYield(funds, allocations);
@@ -46,9 +52,10 @@ export default function Portfolio() {
   const handleSave = async () => {
     if (!isValid) { setError('Allocations must add up to 100%'); return; }
     if (!name) { setError('Enter a name'); return; }
+    if (portfolios.some(p => p.name === name)) { setError('A portfolio with this name already exists'); return; }
     try {
       await createPortfolio(name, allocations, USER_ID);
-      setSaved(true);
+      setSavedMsg('Saved!');
       setError('');
       fetchPortfolios(USER_ID).then(setPortfolios);
     } catch { setError('Failed to save'); }
@@ -57,11 +64,9 @@ export default function Portfolio() {
   const handleUpdate = async () => {
     if (!selectedId) return;
     if (!isValid) { setError('Allocations must add up to 100%'); return; }
-    const duplicate = portfolios.find(p => p.name === name && p.id !== selectedId);
-    if (duplicate) { setError('A portfolio with this name already exists'); return; }
     try {
       await savePortfolio(selectedId, name, allocations);
-      setSaved(true);
+      setSavedMsg('Updated!');
       setError('');
     } catch { setError('Failed to update'); }
   };
@@ -85,7 +90,7 @@ export default function Portfolio() {
 
       <div style={{ display: 'flex', gap: 60, alignItems: 'flex-start' }}>
         <div style={{ flex: 1 }}>
-          <input placeholder="Portfolio name" value={name} onChange={e => setName(e.target.value)} style={{ marginBottom: 15, padding: 8, width: '100%' }} />
+          <input placeholder="Portfolio name" value={name} onChange={e => handleNameChange(e.target.value)} style={{ marginBottom: 15, padding: 8, width: '100%' }} />
           {funds.map(fund => (
             <div key={fund.ticker} style={{ marginBottom: 15 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
@@ -96,11 +101,11 @@ export default function Portfolio() {
             </div>
           ))}
           <button onClick={handleSave} disabled={!isValid || !name} style={{ marginTop: 20, marginRight: 10, padding: '10px 20px', background: isValid && name ? '#16a34a' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: isValid && name ? 'pointer' : 'not-allowed' }}>
-            {saved ? 'Saved!' : 'Save New Portfolio'}
+            {savedMsg === 'Saved!' ? 'Saved!' : 'Save New Portfolio'}
           </button>
           {selectedId && (
             <button onClick={handleUpdate} disabled={!isValid} style={{ marginTop: 20, padding: '10px 20px', background: isValid ? '#2563eb' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: isValid ? 'pointer' : 'not-allowed' }}>
-              {saved ? 'Updated!' : 'Update Current Portfolio'}
+              {savedMsg === 'Updated!' ? 'Updated!' : 'Update Current Portfolio'}
             </button>
           )}
           {error && <div style={{ color: 'red', marginTop: 10 }}>{error}</div>}
