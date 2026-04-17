@@ -4,6 +4,10 @@ node_modules
 # Build output
 dist
 dist-ssr
+target/
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
 
 # Editor directories
 .DS_Store
@@ -11,6 +15,9 @@ dist-ssr
 .vscode
 *.swp
 *.swo
+*.iws
+*.iml
+*.ipr
 
 # Logs
 *.log
@@ -31,3 +38,22 @@ coverage
 # Editor
 *.sublime-workspace
 *.sublime-project
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/nbdist/
+/.nb-gradle/
+build/
+
+### Backend specific ###
+HELP.md
