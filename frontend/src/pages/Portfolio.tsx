@@ -33,6 +33,7 @@ export default function Portfolio() {
     setName(p.name);
     setSelectedId(p.id);
     setSavedMsg('');
+    localStorage.setItem('selectedPortfolioId', p.id.toString());
   };
 
   const selectedFunds = funds.filter(f => selectedTickers.includes(f.ticker));

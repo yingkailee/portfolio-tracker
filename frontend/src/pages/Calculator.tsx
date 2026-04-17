@@ -31,7 +31,10 @@ export default function Calculator() {
     Promise.all([fetchPortfolios(USER_ID), fetchFunds()]).then(([p, f]) => {
       setPortfolios(p);
       setFunds(f);
-      if (p.length) loadPortfolio(p[0], f);
+      const savedId = localStorage.getItem('selectedPortfolioId');
+      const target = savedId ? p.find(x => x.id === +savedId) : null;
+      if (target) loadPortfolio(target, f);
+      else if (p.length) loadPortfolio(p[0], f);
     });
   }, []);
 
