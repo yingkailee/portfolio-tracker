@@ -1,4 +1,4 @@
-import type { Fund, Allocations, CalculationResponse } from './types';
+import type { Fund, Allocations, CalculationResponse, Portfolio } from './types';
 
 const API_BASE = 'http://localhost:8080/api';
 
@@ -51,4 +51,31 @@ export function calculatePortfolioYield(funds: Fund[], allocations: Allocations)
 export function validateAllocations(allocations: Allocations): boolean {
   const total = Object.values(allocations).reduce((sum, val) => sum + val, 0);
   return Math.abs(total - 1) < 0.001;
+}
+
+export async function fetchPortfolios(userId: number): Promise<Portfolio[]> {
+  const res = await fetch(`${API_BASE}/portfolios?userId=${userId}`);
+  return res.json();
+}
+
+export async function createPortfolio(name: string, allocations: Allocations, userId: number): Promise<Portfolio> {
+  const res = await fetch(`${API_BASE}/portfolios`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, allocations: JSON.stringify(allocations), userId }),
+  });
+  return res.json();
+}
+
+export async function savePortfolio(id: number, name: string, allocations: Allocations): Promise<Portfolio> {
+  const res = await fetch(`${API_BASE}/portfolios/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, allocations: JSON.stringify(allocations) }),
+  });
+  return res.json();
+}
+
+export async function deletePortfolio(id: number): Promise<void> {
+  await fetch(`${API_BASE}/portfolios/${id}`, { method: 'DELETE' });
 }
