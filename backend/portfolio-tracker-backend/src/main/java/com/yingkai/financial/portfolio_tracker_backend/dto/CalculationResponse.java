@@ -11,6 +11,6 @@ public class CalculationResponse {
     private Integer timeHorizonYears;
     private Double portfolioYield;
     private Double finalNetWorth;
-    private Double totalInvested;
+    private Double additionalInvestments;
     private Double totalGrowth;
 }
