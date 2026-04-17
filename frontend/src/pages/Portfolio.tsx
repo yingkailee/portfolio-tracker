@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import type { Fund, Allocations, Portfolio } from '../types';
-import { fetchFunds, fetchPortfolios, createPortfolio, calculatePortfolioYield, validateAllocations } from '../api';
+import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, calculatePortfolioYield, validateAllocations } from '../api';
 
 const COLORS = ['#2563eb', '#dc2626', '#16a34a', '#9333ea', '#ea580c', '#0891b2'];
 const USER_ID = 1;
@@ -12,6 +12,7 @@ export default function Portfolio() {
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
   const [allocations, setAllocations] = useState<Allocations>({});
   const [name, setName] = useState('');
+  const [selectedId, setSelectedId] = useState<number | null>(null);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
 
@@ -19,13 +20,15 @@ export default function Portfolio() {
     Promise.all([fetchFunds(), fetchPortfolios(USER_ID)]).then(([f, p]) => {
       setFunds(f);
       setPortfolios(p);
-      if (p.length) loadPortfolio(p[0]);
+      if (p.length) { setSelectedId(p[0].id); loadPortfolio(p[0]); }
     });
   }, []);
 
   const loadPortfolio = (p: Portfolio) => {
     setAllocations(JSON.parse(p.allocations));
     setName(p.name);
+    setSelectedId(p.id);
+    setSaved(false);
   };
 
   const handleAllocationChange = (ticker: string, value: number) => {
@@ -43,12 +46,17 @@ export default function Portfolio() {
   const handleSave = async () => {
     if (!isValid) { setError('Allocations must add up to 100%'); return; }
     if (!name) { setError('Enter a name'); return; }
-    if (portfolios.some(p => p.name === name)) { setError('A portfolio with this name already exists'); return; }
+    const duplicate = portfolios.find(p => p.name === name && p.id !== selectedId);
+    if (duplicate) { setError('A portfolio with this name already exists'); return; }
     try {
-      await createPortfolio(name, allocations, USER_ID);
+      if (selectedId) {
+        await savePortfolio(selectedId, name, allocations);
+      } else {
+        await createPortfolio(name, allocations, USER_ID);
+      }
       setSaved(true);
       setError('');
-      fetchPortfolios(USER_ID).then(setPortfolios);
+      fetchPortfolios(USER_ID).then(p => { setPortfolios(p); setSelectedId(p.find(x => x.name === name)?.id || null); });
     } catch { setError('Failed to save'); }
   };
 
