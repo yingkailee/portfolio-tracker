@@ -52,7 +52,7 @@ export default function Portfolio() {
   };
 
   return (
-    <div style={{ padding: 20, maxWidth: 900, margin: '0 auto' }}>
+    <div style={{ padding: 20, maxWidth: 1000, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
         <h1>Portfolio Allocation</h1>
         <Link to="/calculator" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>Go to Calculator →</Link>
@@ -86,12 +86,12 @@ export default function Portfolio() {
           {error && <div style={{ color: 'red', marginTop: 10 }}>{error}</div>}
         </div>
 
-        <div style={{ width: 300 }}>
+        <div style={{ width: 350 }}>
           <h3>Allocation</h3>
           {pieData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={280}>
               <PieChart>
-                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, value }) => `${name}: ${value}%`}>
+                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label={({ name, value }) => `${name}: ${value}%`} labelLine={true}>
                   {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                 </Pie>
               </PieChart>
