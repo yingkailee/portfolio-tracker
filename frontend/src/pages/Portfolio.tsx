@@ -89,14 +89,19 @@ export default function Portfolio() {
         <div style={{ width: 350 }}>
           <h3>Allocation</h3>
           {pieData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer width="100%" height={300}>
               <PieChart>
-                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label={({ name, value }) => `${name}: ${value}%`} labelLine={true}>
+                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={110}>
                   {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
           ) : <p style={{ textAlign: 'center', color: '#666' }}>No allocation</p>}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 10 }}>
+            {pieData.map((item, i) => (
+              <div key={item.name} style={{ color: COLORS[i % COLORS.length] }}>{item.name}: {item.value}%</div>
+            ))}
+          </div>
           <p style={{ textAlign: 'center', marginTop: 10 }}>Yield: <strong>{portfolioYield.toFixed(2)}%</strong></p>
         </div>
       </div>
