@@ -45,6 +45,7 @@ export default function Calculator() {
     setManualYield(false);
     const y = calculatePortfolioYield(f, allocs);
     setYield(y);
+    localStorage.setItem('selectedPortfolioId', p.id.toString());
   };
 
   useEffect(() => {
