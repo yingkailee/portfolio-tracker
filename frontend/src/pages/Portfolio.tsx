@@ -80,7 +80,7 @@ export default function Portfolio() {
   const handleSave = async () => {
     if (!isValid) { setError(hasFunds ? 'Allocations must add up to 100%' : 'Select at least one fund'); return; }
     if (!name) { setError('Enter a name'); return; }
-    if (portfolios.some(p => p.name === name && p.id !== selectedId)) { setError('A portfolio with this name already exists'); return; }
+    if (portfolios.some(p => p.name === name)) { setError('A portfolio with this name already exists'); return; }
     try {
       await createPortfolio(name, allocations, USER_ID);
       setSavedMsg('Saved!');
