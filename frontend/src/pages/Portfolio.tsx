@@ -46,18 +46,24 @@ export default function Portfolio() {
   const handleSave = async () => {
     if (!isValid) { setError('Allocations must add up to 100%'); return; }
     if (!name) { setError('Enter a name'); return; }
+    try {
+      await createPortfolio(name, allocations, USER_ID);
+      setSaved(true);
+      setError('');
+      fetchPortfolios(USER_ID).then(setPortfolios);
+    } catch { setError('Failed to save'); }
+  };
+
+  const handleUpdate = async () => {
+    if (!selectedId) return;
+    if (!isValid) { setError('Allocations must add up to 100%'); return; }
     const duplicate = portfolios.find(p => p.name === name && p.id !== selectedId);
     if (duplicate) { setError('A portfolio with this name already exists'); return; }
     try {
-      if (selectedId) {
-        await savePortfolio(selectedId, name, allocations);
-      } else {
-        await createPortfolio(name, allocations, USER_ID);
-      }
+      await savePortfolio(selectedId, name, allocations);
       setSaved(true);
       setError('');
-      fetchPortfolios(USER_ID).then(p => { setPortfolios(p); setSelectedId(p.find(x => x.name === name)?.id || null); });
-    } catch { setError('Failed to save'); }
+    } catch { setError('Failed to update'); }
   };
 
   return (
@@ -89,8 +95,13 @@ export default function Portfolio() {
               <input type="range" min={0} max={100} value={Math.round((allocations[fund.ticker] || 0) * 100)} onChange={e => handleAllocationChange(fund.ticker, +e.target.value)} style={{ width: '100%' }} />
             </div>
           ))}
+          {selectedId && (
+            <button onClick={handleUpdate} disabled={!isValid} style={{ marginTop: 20, marginRight: 10, padding: '10px 20px', background: isValid ? '#2563eb' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: isValid ? 'pointer' : 'not-allowed' }}>
+              {saved ? 'Updated!' : 'Update Portfolio'}
+            </button>
+          )}
           <button onClick={handleSave} disabled={!isValid || !name} style={{ marginTop: 20, padding: '10px 20px', background: isValid && name ? '#16a34a' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: isValid && name ? 'pointer' : 'not-allowed' }}>
-            {saved ? 'Saved!' : 'Save Portfolio'}
+            {saved ? 'Saved!' : 'Save New'}
           </button>
           {error && <div style={{ color: 'red', marginTop: 10 }}>{error}</div>}
         </div>
