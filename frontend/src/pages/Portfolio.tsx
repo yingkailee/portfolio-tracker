@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import type { Fund, Allocations, Portfolio } from '../types';
-import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, calculatePortfolioYield, validateAllocations } from '../api';
+import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, deleteAllPortfolios, calculatePortfolioYield, validateAllocations } from '../api';
 
 const COLORS = ['#2563eb', '#dc2626', '#16a34a', '#9333ea', '#ea580c', '#0891b2'];
 const USER_ID = 1;
@@ -99,6 +99,15 @@ export default function Portfolio() {
     } catch { setError('Failed to update'); }
   };
 
+  const handleDeleteAll = async () => {
+    const confirmed = window.confirm('Are you sure you want to DELETE ALL portfolios? This cannot be undone!');
+    if (!confirmed) return;
+    try {
+      await deleteAllPortfolios(USER_ID);
+      fetchPortfolios(USER_ID).then(p => { setPortfolios(p); setAllocations({ VOO: 1 }); setSelectedTickers(['VOO']); setName(''); setSelectedId(null); });
+    } catch { setError('Failed to delete'); }
+  };
+
   return (
     <div style={{ padding: 20, maxWidth: 1000, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
@@ -152,9 +161,14 @@ export default function Portfolio() {
             {savedMsg === 'Saved!' ? 'Saved!' : 'Save New Portfolio'}
           </button>
           {selectedId && (
-            <button onClick={handleUpdate} disabled={!isValid} style={{ marginTop: 20, padding: '10px 20px', background: isValid ? '#2563eb' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: isValid ? 'pointer' : 'not-allowed' }}>
-              {savedMsg === 'Updated!' ? 'Updated!' : 'Update Current Portfolio'}
-            </button>
+            <>
+              <button onClick={handleUpdate} disabled={!isValid} style={{ marginTop: 20, marginRight: 10, padding: '10px 20px', background: isValid ? '#2563eb' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: isValid ? 'pointer' : 'not-allowed' }}>
+                {savedMsg === 'Updated!' ? 'Updated!' : 'Update Current Portfolio'}
+              </button>
+              <button onClick={handleDeleteAll} style={{ marginTop: 20, padding: '10px 20px', background: '#dc2626', color: 'white', border: 'none', borderRadius: 5, cursor: 'pointer' }}>
+                Delete All Portfolios
+              </button>
+            </>
           )}
           {error && <div style={{ color: 'red', marginTop: 10 }}>{error}</div>}
         </div>

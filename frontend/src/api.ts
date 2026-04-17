@@ -79,3 +79,8 @@ export async function savePortfolio(id: number, name: string, allocations: Alloc
 export async function deletePortfolio(id: number): Promise<void> {
   await fetch(`${API_BASE}/portfolios/${id}`, { method: 'DELETE' });
 }
+
+export async function deleteAllPortfolios(userId: number): Promise<void> {
+  const portfolios = await fetchPortfolios(userId);
+  await Promise.all(portfolios.map(p => fetch(`${API_BASE}/portfolios/${p.id}`, { method: 'DELETE' })));
+}
