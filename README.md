@@ -2,7 +2,14 @@
 
 **Early Development** - Not production ready.
 
-## Running Locally
+## Setup
+
+```bash
+# Frontend dependencies
+cd frontend && npm install
+```
+
+## Running
 
 **Backend:**
 ```bash
@@ -20,16 +27,13 @@ Runs on http://localhost:5173
 
 ## Features
 
-- Create and manage stock portfolios with custom allocations
-- Choose from available funds (VOO, VTI, BND, VNQ, QQQ, VEA)
-- Add/remove funds dynamically
-- Calculate net worth projections over time
-- Yield calculated from portfolio allocations
-- Multiple portfolios per user
-- Searchable dropdown for portfolio selection
+- Create portfolios with custom fund allocations
+- Add/remove funds (VOO, VTI, BND, etc.)
+- Calculate net worth projections
+- Multiple portfolios supported
 
 ## Tech Stack
 
 - Frontend: React + TypeScript + Vite
 - Backend: Spring Boot (Java)
-- Database: H2 (in-memory)
+- Database: H2
