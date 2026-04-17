@@ -84,6 +84,9 @@ export default function Calculator() {
               <div style={{ padding: 8 }}>
                 <input placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', padding: '4px 8px', marginBottom: 8 }} />
               </div>
+              <div onClick={() => { setManualYield(true); setSelectedPortfolio(null); setShowDropdown(false); setSearch(''); localStorage.removeItem('selectedPortfolioId'); }} style={{ padding: '8px 12px', cursor: 'pointer', background: manualYield ? '#e5e7eb' : 'white' }} onMouseEnter={e => e.currentTarget.style.background = '#f5f5f5'} onMouseLeave={e => e.currentTarget.style.background = manualYield ? '#e5e7eb' : 'white'}>
+                -- manual --
+              </div>
               {portfolios.filter(p => p.name.toLowerCase().includes(search.toLowerCase())).map(p => (
                 <div key={p.id} onClick={() => { loadPortfolio(p, funds); setShowDropdown(false); setSearch(''); }} style={{ padding: '8px 12px', cursor: 'pointer', background: p.id === selectedPortfolio?.id ? '#e5e7eb' : 'white' }} onMouseEnter={e => e.currentTarget.style.background = '#f5f5f5'} onMouseLeave={e => e.currentTarget.style.background = p.id === selectedPortfolio?.id ? '#e5e7eb' : 'white'}>
                   {p.name}
