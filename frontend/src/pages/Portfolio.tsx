@@ -95,14 +95,14 @@ export default function Portfolio() {
               <input type="range" min={0} max={100} value={Math.round((allocations[fund.ticker] || 0) * 100)} onChange={e => handleAllocationChange(fund.ticker, +e.target.value)} style={{ width: '100%' }} />
             </div>
           ))}
+          <button onClick={handleSave} disabled={!isValid || !name} style={{ marginTop: 20, marginRight: 10, padding: '10px 20px', background: isValid && name ? '#16a34a' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: isValid && name ? 'pointer' : 'not-allowed' }}>
+            {saved ? 'Saved!' : 'Save New Portfolio'}
+          </button>
           {selectedId && (
-            <button onClick={handleUpdate} disabled={!isValid} style={{ marginTop: 20, marginRight: 10, padding: '10px 20px', background: isValid ? '#2563eb' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: isValid ? 'pointer' : 'not-allowed' }}>
-              {saved ? 'Updated!' : 'Update Portfolio'}
+            <button onClick={handleUpdate} disabled={!isValid} style={{ marginTop: 20, padding: '10px 20px', background: isValid ? '#2563eb' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: isValid ? 'pointer' : 'not-allowed' }}>
+              {saved ? 'Updated!' : 'Update Current Portfolio'}
             </button>
           )}
-          <button onClick={handleSave} disabled={!isValid || !name} style={{ marginTop: 20, padding: '10px 20px', background: isValid && name ? '#16a34a' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: isValid && name ? 'pointer' : 'not-allowed' }}>
-            {saved ? 'Saved!' : 'Save New'}
-          </button>
           {error && <div style={{ color: 'red', marginTop: 10 }}>{error}</div>}
         </div>
 
