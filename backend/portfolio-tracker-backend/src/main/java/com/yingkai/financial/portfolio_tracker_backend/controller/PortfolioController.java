@@ -34,7 +34,7 @@ public class PortfolioController {
 
     @PostMapping("/calculate-from-allocation")
     public ResponseEntity<CalculationResponse> calculateFromAllocation(
-            @RequestParam Double currentNetWorth,
+            @RequestParam Double initialCapital,
             @RequestParam Double yearlySavings,
             @RequestParam Integer timeHorizonYears,
             @RequestBody Map<String, Double> allocations) {

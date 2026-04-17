@@ -6,11 +6,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CalculationResponse {
-    private Double currentNetWorth;
+    private Double initialCapital;
     private Double yearlySavings;
     private Integer timeHorizonYears;
     private Double portfolioYield;
     private Double finalNetWorth;
-    private Double totalContributions;
+    private Double totalInvested;
     private Double totalGrowth;
 }

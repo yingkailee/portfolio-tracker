@@ -11,25 +11,25 @@ import java.util.Map;
 public class CalculationService {
 
     public CalculationResponse calculateProjection(CalculationRequest request) {
-        double netWorth = request.getCurrentNetWorth();
+        double netWorth = request.getInitialCapital();
         double yearlySavings = request.getYearlySavings();
         int years = request.getTimeHorizonYears();
         double annualYield = request.getPortfolioYield() / 100.0;
-        double totalContributions = netWorth;
+        double totalInvested = netWorth;
 
         for (int i = 0; i < years; i++) {
             netWorth = (netWorth + yearlySavings) * (1 + annualYield);
-            totalContributions += yearlySavings;
+            totalInvested += yearlySavings;
         }
 
         return new CalculationResponse(
-                request.getCurrentNetWorth(),
+                request.getInitialCapital(),
                 request.getYearlySavings(),
                 years,
                 request.getPortfolioYield(),
                 Math.round(netWorth * 100.0) / 100.0,
-                Math.round(totalContributions * 100.0) / 100.0,
-                Math.round((netWorth - totalContributions) * 100.0) / 100.0
+                Math.round(totalInvested * 100.0) / 100.0,
+                Math.round((netWorth - totalInvested) * 100.0) / 100.0
         );
     }
 

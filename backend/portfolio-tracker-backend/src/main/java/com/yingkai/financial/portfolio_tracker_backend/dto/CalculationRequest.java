@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CalculationRequest {
-    private Double currentNetWorth;
+    private Double initialCapital;
     private Double yearlySavings;
     private Integer timeHorizonYears;
     private Double portfolioYield;
