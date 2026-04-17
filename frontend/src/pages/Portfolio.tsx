@@ -35,6 +35,12 @@ export default function Portfolio() {
     Promise.all([fetchFunds(), fetchPortfolios(USER_ID)]).then(([f, p]) => {
       setFunds(f);
       setPortfolios(p);
+      const savedId = localStorage.getItem('selectedPortfolioId');
+      console.log('Portfolio mount - savedId:', savedId, 'portfolios:', p.map(x => x.name + '(' + x.id + ')'));
+      if (savedId) {
+        const target = p.find(x => x.id === +savedId);
+        if (target) { setSelectedId(target.id); loadPortfolio(target); return; }
+      }
       if (p.length) { setSelectedId(p[0].id); loadPortfolio(p[0]); }
     });
   }, []);

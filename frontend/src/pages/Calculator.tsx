@@ -45,6 +45,7 @@ export default function Calculator() {
       setPortfolios(p);
       setFunds(f);
       const savedId = localStorage.getItem('selectedPortfolioId');
+      console.log('Calculator mount - savedId:', savedId, 'portfolios:', p.map(x => x.name + '(' + x.id + ')'));
       const target = savedId ? p.find(x => x.id === +savedId) : null;
       if (target) loadPortfolio(target, f);
       else if (p.length) loadPortfolio(p[0], f);
