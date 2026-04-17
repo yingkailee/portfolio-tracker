@@ -21,6 +21,8 @@ export default function Calculator() {
   const [funds, setFunds] = useState<Fund[]>([]);
   const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(null);
   const [manualYield, setManualYield] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [search, setSearch] = useState('');
   const [capital, setCapital] = useState(100000);
   const [savings, setSavings] = useState(20000);
   const [years, setYears] = useState(20);
@@ -60,16 +62,25 @@ export default function Calculator() {
         <Link to="/portfolio" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>← Portfolio</Link>
       </div>
 
-      <div style={{ marginBottom: 20 }}>
+      <div style={{ marginBottom: 20, position: 'relative' }}>
         <label>Portfolio: </label>
-        <select value={manualYield ? '' : selectedPortfolio?.id || ''} onChange={e => {
-          if (!e.target.value) { setManualYield(true); setSelectedPortfolio(null); return; }
-          const p = portfolios.find(p => p.id === +e.target.value);
-          if (p) loadPortfolio(p, funds);
-        }}>
-          <option value="">-- manual --</option>
-          {portfolios.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-        </select>
+        <div style={{ position: 'relative', display: 'inline-block' }}>
+          <div onClick={() => setShowDropdown(!showDropdown)} style={{ cursor: 'pointer', padding: '8px 12px', border: '1px solid #ccc', borderRadius: 5, minWidth: 150, background: 'white' }}>
+            {manualYield ? '-- manual --' : selectedPortfolio?.name || '-- select --'} ▾
+          </div>
+          {showDropdown && (
+            <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', border: '1px solid #ccc', borderRadius: 5, minWidth: 200, maxHeight: 200, overflowY: 'auto', zIndex: 100, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+              <div style={{ padding: 8 }}>
+                <input placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', padding: '4px 8px', marginBottom: 8 }} />
+              </div>
+              {portfolios.filter(p => p.name.toLowerCase().includes(search.toLowerCase())).map(p => (
+                <div key={p.id} onClick={() => { loadPortfolio(p, funds); setShowDropdown(false); setSearch(''); }} style={{ padding: '8px 12px', cursor: 'pointer', background: p.id === selectedPortfolio?.id ? '#e5e7eb' : 'white' }} onMouseEnter={e => e.currentTarget.style.background = '#f5f5f5'} onMouseLeave={e => e.currentTarget.style.background = p.id === selectedPortfolio?.id ? '#e5e7eb' : 'white'}>
+                  {p.name}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         {selectedPortfolio && <span style={{ marginLeft: 10, color: '#666' }}>(yield: {yield_.toFixed(2)}%)</span>}
       </div>
 

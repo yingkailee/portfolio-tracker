@@ -17,6 +17,8 @@ export default function Portfolio() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [error, setError] = useState('');
   const [savedMsg, setSavedMsg] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     Promise.all([fetchFunds(), fetchPortfolios(USER_ID)]).then(([f, p]) => {
@@ -121,12 +123,25 @@ export default function Portfolio() {
       </div>
 
       {portfolios.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
-          <label>Saved: </label>
-          <select onChange={e => loadPortfolio(portfolios.find(p => p.id === +e.target.value)!)} value={selectedId || ''}>
-            <option value="">-- select --</option>
-            {portfolios.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-          </select>
+        <div style={{ marginBottom: 20, position: 'relative' }}>
+          <label>Portfolio: </label>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <div onClick={() => setShowDropdown(!showDropdown)} style={{ cursor: 'pointer', padding: '8px 12px', border: '1px solid #ccc', borderRadius: 5, minWidth: 150, background: 'white' }}>
+              {portfolios.find(p => p.id === selectedId)?.name || '-- select --'} ▾
+            </div>
+            {showDropdown && (
+              <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', border: '1px solid #ccc', borderRadius: 5, minWidth: 200, maxHeight: 200, overflowY: 'auto', zIndex: 100, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+                <div style={{ padding: 8 }}>
+                  <input placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', padding: '4px 8px', marginBottom: 8 }} />
+                </div>
+                {portfolios.filter(p => p.name.toLowerCase().includes(search.toLowerCase())).map(p => (
+                  <div key={p.id} onClick={() => { loadPortfolio(p); setShowDropdown(false); setSearch(''); }} style={{ padding: '8px 12px', cursor: 'pointer', background: p.id === selectedId ? '#e5e7eb' : 'white' }} onMouseEnter={e => e.currentTarget.style.background = '#f5f5f5'} onMouseLeave={e => e.currentTarget.style.background = p.id === selectedId ? '#e5e7eb' : 'white'}>
+                    {p.name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
