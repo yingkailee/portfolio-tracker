@@ -82,10 +82,12 @@ export default function Portfolio() {
     if (!name) { setError('Enter a name'); return; }
     if (portfolios.some(p => p.name === name)) { setError('A portfolio with this name already exists'); return; }
     try {
-      await createPortfolio(name, allocations, USER_ID);
+      const newPortfolio = await createPortfolio(name, allocations, USER_ID);
       setSavedMsg('Saved!');
       setError('');
-      fetchPortfolios(USER_ID).then(setPortfolios);
+      const updated = await fetchPortfolios(USER_ID);
+      setPortfolios(updated);
+      setSelectedId(newPortfolio.id);
     } catch { setError('Failed to save'); }
   };
 
@@ -96,6 +98,8 @@ export default function Portfolio() {
       await savePortfolio(selectedId, name, allocations);
       setSavedMsg('Updated!');
       setError('');
+      const updated = await fetchPortfolios(USER_ID);
+      setPortfolios(updated);
     } catch { setError('Failed to update'); }
   };
 
