@@ -52,7 +52,7 @@ export default function Portfolio() {
   };
 
   return (
-    <div style={{ padding: 20, maxWidth: 800, margin: '0 auto' }}>
+    <div style={{ padding: 20, maxWidth: 900, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
         <h1>Portfolio Allocation</h1>
         <Link to="/calculator" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>Go to Calculator →</Link>
@@ -68,7 +68,7 @@ export default function Portfolio() {
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: 40, alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', gap: 60, alignItems: 'flex-start' }}>
         <div style={{ flex: 1 }}>
           <input placeholder="Portfolio name" value={name} onChange={e => setName(e.target.value)} style={{ marginBottom: 15, padding: 8, width: '100%' }} />
           {funds.map(fund => (
@@ -86,12 +86,12 @@ export default function Portfolio() {
           {error && <div style={{ color: 'red', marginTop: 10 }}>{error}</div>}
         </div>
 
-        <div style={{ width: 250 }}>
+        <div style={{ width: 300 }}>
           <h3>Allocation</h3>
           {pieData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={250}>
               <PieChart>
-                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, value }) => `${name} ${value}%`}>
+                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, value }) => `${name}: ${value}%`}>
                   {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                 </Pie>
               </PieChart>
