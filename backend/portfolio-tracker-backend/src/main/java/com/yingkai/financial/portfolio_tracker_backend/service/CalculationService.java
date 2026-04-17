@@ -28,7 +28,7 @@ public class CalculationService {
                 request.getPortfolioYield(),
                 Math.round(netWorth * 100.0) / 100.0,
                 Math.round(additionalInvestments * 100.0) / 100.0,
-                Math.round((netWorth - request.getInitialCapital() - totalInvested) * 100.0) / 100.0
+                Math.round((netWorth - request.getInitialCapital() - additionalInvestments) * 100.0) / 100.0
         );
     }
 
