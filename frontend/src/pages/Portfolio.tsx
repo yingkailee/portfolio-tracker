@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import type { Fund, Allocations, Portfolio } from '../types';
@@ -19,6 +19,17 @@ export default function Portfolio() {
   const [savedMsg, setSavedMsg] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [search, setSearch] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     Promise.all([fetchFunds(), fetchPortfolios(USER_ID)]).then(([f, p]) => {
@@ -125,7 +136,7 @@ export default function Portfolio() {
       {portfolios.length > 0 && (
         <div style={{ marginBottom: 20, position: 'relative' }}>
           <label>Portfolio: </label>
-          <div style={{ position: 'relative', display: 'inline-block' }}>
+          <div ref={dropdownRef} style={{ position: 'relative', display: 'inline-block' }}>
             <div onClick={() => setShowDropdown(!showDropdown)} style={{ cursor: 'pointer', padding: '8px 12px', border: '1px solid #ccc', borderRadius: 5, minWidth: 150, background: 'white' }}>
               {portfolios.find(p => p.id === selectedId)?.name || '-- select --'} ▾
             </div>

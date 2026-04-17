@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import type { CalculationResponse, Portfolio, Fund } from '../types';
 import { calculateProjection, fetchPortfolios, fetchFunds, calculatePortfolioYield } from '../api';
@@ -23,6 +23,17 @@ export default function Calculator() {
   const [manualYield, setManualYield] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [search, setSearch] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   const [capital, setCapital] = useState(100000);
   const [savings, setSavings] = useState(20000);
   const [years, setYears] = useState(20);
@@ -64,7 +75,7 @@ export default function Calculator() {
 
       <div style={{ marginBottom: 20, position: 'relative' }}>
         <label>Portfolio: </label>
-        <div style={{ position: 'relative', display: 'inline-block' }}>
+        <div ref={dropdownRef} style={{ position: 'relative', display: 'inline-block' }}>
           <div onClick={() => setShowDropdown(!showDropdown)} style={{ cursor: 'pointer', padding: '8px 12px', border: '1px solid #ccc', borderRadius: 5, minWidth: 150, background: 'white' }}>
             {manualYield ? '-- manual --' : selectedPortfolio?.name || '-- select --'} ▾
           </div>
