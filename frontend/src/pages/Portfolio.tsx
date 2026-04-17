@@ -10,7 +10,9 @@ const USER_ID = 1;
 export default function Portfolio() {
   const [funds, setFunds] = useState<Fund[]>([]);
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
-  const [allocations, setAllocations] = useState<Allocations>({});
+  const [allocations, setAllocations] = useState<Allocations>({ VOO: 1 });
+  const [selectedTickers, setSelectedTickers] = useState<string[]>(['VOO']);
+  const [showPicker, setShowPicker] = useState(false);
   const [name, setName] = useState('');
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [error, setError] = useState('');
@@ -25,14 +27,37 @@ export default function Portfolio() {
   }, []);
 
   const loadPortfolio = (p: Portfolio) => {
-    setAllocations(JSON.parse(p.allocations));
+    const allocs = JSON.parse(p.allocations);
+    setAllocations(allocs);
+    setSelectedTickers(Object.keys(allocs));
     setName(p.name);
     setSelectedId(p.id);
     setSavedMsg('');
   };
 
+  const selectedFunds = funds.filter(f => selectedTickers.includes(f.ticker));
+
   const handleAllocationChange = (ticker: string, value: number) => {
     setAllocations(prev => ({ ...prev, [ticker]: value / 100 }));
+    setSavedMsg('');
+  };
+
+  const addFund = (ticker: string) => {
+    if (!selectedTickers.includes(ticker)) {
+      setSelectedTickers([...selectedTickers, ticker]);
+      setAllocations(prev => ({ ...prev, [ticker]: 0 }));
+    }
+    setShowPicker(false);
+    setSavedMsg('');
+  };
+
+  const removeFund = (ticker: string) => {
+    if (selectedTickers.length === 1) return;
+    const newTickers = selectedTickers.filter(t => t !== ticker);
+    setSelectedTickers(newTickers);
+    const newAllocs = { ...allocations };
+    delete newAllocs[ticker];
+    setAllocations(newAllocs);
     setSavedMsg('');
   };
 
@@ -42,17 +67,20 @@ export default function Portfolio() {
   };
 
   const portfolioYield = calculatePortfolioYield(funds, allocations);
-  const isValid = validateAllocations(allocations);
+  const hasFunds = selectedTickers.length > 0;
+  const isValid = hasFunds && validateAllocations(allocations);
 
-  const pieData = funds.filter(f => allocations[f.ticker] > 0).map(f => ({
+  const pieData = selectedFunds.map(f => ({
     name: f.ticker,
-    value: Math.round(allocations[f.ticker] * 100),
-  }));
+    value: Math.round((allocations[f.ticker] || 0) * 100),
+  })).filter(d => d.value > 0);
+
+  const availableFunds = funds.filter(f => !selectedTickers.includes(f.ticker));
 
   const handleSave = async () => {
-    if (!isValid) { setError('Allocations must add up to 100%'); return; }
+    if (!isValid) { setError(hasFunds ? 'Allocations must add up to 100%' : 'Select at least one fund'); return; }
     if (!name) { setError('Enter a name'); return; }
-    if (portfolios.some(p => p.name === name)) { setError('A portfolio with this name already exists'); return; }
+    if (portfolios.some(p => p.name === name && p.id !== selectedId)) { setError('A portfolio with this name already exists'); return; }
     try {
       await createPortfolio(name, allocations, USER_ID);
       setSavedMsg('Saved!');
@@ -63,7 +91,7 @@ export default function Portfolio() {
 
   const handleUpdate = async () => {
     if (!selectedId) return;
-    if (!isValid) { setError('Allocations must add up to 100%'); return; }
+    if (!isValid) { setError(hasFunds ? 'Allocations must add up to 100%' : 'Select at least one fund'); return; }
     try {
       await savePortfolio(selectedId, name, allocations);
       setSavedMsg('Updated!');
@@ -81,7 +109,7 @@ export default function Portfolio() {
       {portfolios.length > 0 && (
         <div style={{ marginBottom: 20 }}>
           <label>Saved: </label>
-          <select onChange={e => loadPortfolio(portfolios.find(p => p.id === +e.target.value)!)} value={portfolios.find(p => p.name === name)?.id || ''}>
+          <select onChange={e => loadPortfolio(portfolios.find(p => p.id === +e.target.value)!)} value={selectedId || ''}>
             <option value="">-- select --</option>
             {portfolios.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
@@ -91,15 +119,35 @@ export default function Portfolio() {
       <div style={{ display: 'flex', gap: 60, alignItems: 'flex-start' }}>
         <div style={{ flex: 1 }}>
           <input placeholder="Portfolio name" value={name} onChange={e => handleNameChange(e.target.value)} style={{ marginBottom: 15, padding: 8, width: '100%' }} />
-          {funds.map(fund => (
-            <div key={fund.ticker} style={{ marginBottom: 15 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                <span><strong>{fund.ticker}</strong> - {fund.name}</span>
-                <span>{Math.round((allocations[fund.ticker] || 0) * 100)}%</span>
+
+          <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+            {selectedFunds.map(fund => (
+              <div key={fund.ticker} style={{ marginBottom: 15, position: 'relative' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                  <span>
+                    <strong>{fund.ticker}</strong> - {fund.name}
+                    <button onClick={() => removeFund(fund.ticker)} disabled={selectedTickers.length === 1} style={{ marginLeft: 8, padding: '2px 6px', background: selectedTickers.length === 1 ? '#ccc' : '#dc2626', color: 'white', border: 'none', borderRadius: 3, cursor: selectedTickers.length === 1 ? 'not-allowed' : 'pointer' }}>×</button>
+                  </span>
+                  <span>{Math.round((allocations[fund.ticker] || 0) * 100)}%</span>
+                </div>
+                <input type="range" min={0} max={100} value={Math.round((allocations[fund.ticker] || 0) * 100)} onChange={e => handleAllocationChange(fund.ticker, +e.target.value)} style={{ width: '100%' }} />
               </div>
-              <input type="range" min={0} max={100} value={Math.round((allocations[fund.ticker] || 0) * 100)} onChange={e => handleAllocationChange(fund.ticker, +e.target.value)} style={{ width: '100%' }} />
-            </div>
-          ))}
+            ))}
+          </div>
+
+          <div style={{ marginTop: 10, position: 'relative' }}>
+            <button onClick={() => setShowPicker(!showPicker)} style={{ padding: '8px 16px', background: '#666', color: 'white', border: 'none', borderRadius: 5, cursor: 'pointer' }}>+ Add Fund</button>
+            {showPicker && (
+              <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', border: '1px solid #ccc', borderRadius: 5, maxHeight: 200, overflowY: 'auto', zIndex: 100, minWidth: 250, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+                {availableFunds.map(fund => (
+                  <div key={fund.ticker} onClick={() => addFund(fund.ticker)} style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid #eee' }} onMouseEnter={e => e.currentTarget.style.background = '#f5f5f5'} onMouseLeave={e => e.currentTarget.style.background = 'white'}>
+                    <strong>{fund.ticker}</strong> - {fund.name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           <button onClick={handleSave} disabled={!isValid || !name} style={{ marginTop: 20, marginRight: 10, padding: '10px 20px', background: isValid && name ? '#16a34a' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: isValid && name ? 'pointer' : 'not-allowed' }}>
             {savedMsg === 'Saved!' ? 'Saved!' : 'Save New Portfolio'}
           </button>
