@@ -44,6 +44,6 @@ public class PortfolioController {
         double portfolioYield = calculationService.calculatePortfolioYield(allocations, fundYields);
 
         return ResponseEntity.ok(calculationService.calculateProjection(
-                new CalculationRequest(currentNetWorth, yearlySavings, timeHorizonYears, portfolioYield)));
+                new CalculationRequest(initialCapital, yearlySavings, timeHorizonYears, portfolioYield)));
     }
 }
