@@ -9,11 +9,14 @@ import com.yingkai.financial.portfolio_tracker_backend.repository.UserRepository
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @RequiredArgsConstructor
 public class DataInitializer {
+
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private final FundRepository fundRepository;
     private final UserRepository userRepository;
@@ -34,7 +37,7 @@ public class DataInitializer {
             if (userRepository.count() == 0) {
                 User user = new User();
                 user.setUsername("su");
-                user.setPassword("gw");
+                user.setPassword(passwordEncoder.encode("gw"));
                 user = userRepository.save(user);
 
                 Portfolio portfolio = new Portfolio();
