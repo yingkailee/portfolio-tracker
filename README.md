@@ -9,14 +9,6 @@
 cd frontend && npm install
 ```
 
-## Admin Access
-
-Default credentials (created on first run):
-- **Username:** `su`
-- **Password:** `gw`
-
-Login via the web interface at http://localhost:5173
-
 ## Running
 
 **Backend:**
@@ -33,6 +25,11 @@ npm run dev
 ```
 Runs on http://localhost:5173
 
+## Admin Access
+
+- **Username:** `su`
+- **Password:** `gw`
+
 ## Features
 
 - Create portfolios with custom fund allocations
@@ -45,9 +42,3 @@ Runs on http://localhost:5173
 - Frontend: React + TypeScript + Vite
 - Backend: Spring Boot (Java)
 - Database: H2
-
-## Security
-
-- HTTP Basic Authentication with STATELESS sessions
-- Passwords stored using BCryptPasswordEncoder
-- Only-authenticated API requests allowed for /api/**
