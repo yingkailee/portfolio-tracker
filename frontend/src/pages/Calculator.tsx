@@ -107,21 +107,21 @@ export default function Calculator() {
       {result && (
         <div style={{ background: '#f3f4f6', padding: 20, borderRadius: 10, marginTop: 20 }}>
           <h2 style={{ marginBottom: 15, borderBottom: '1px solid #ddd', paddingBottom: 10 }}>Results</h2>
-          <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+            <span>Initial Capital:</span>
+            <span>{fmt(result.initialCapital)}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+            <span>Additional Investments:</span>
+            <span>{fmt(result.additionalInvestments)}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 15 }}>
+            <span>Total Growth:</span>
+            <span style={{ color: '#2563eb' }}>{fmt(result.totalGrowth)}</span>
+          </div>
+          <div style={{ borderTop: '1px solid #ddd', paddingTop: 15, display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '18px', fontWeight: 600 }}>Final Net Worth:</span>
             <strong style={{ color: '#16a34a', fontSize: '24px' }}>{fmt(result.finalNetWorth)}</strong>
-          </div>
-          <div style={{ borderTop: '1px solid #ddd', marginTop: 15, paddingTop: 15 }}>
-            {[
-              ['Initial Capital', fmt(result.initialCapital), ''],
-              ['Additional Investments', fmt(result.additionalInvestments), ''],
-              ['Total Growth', fmt(result.totalGrowth), '#2563eb'],
-            ].map(([label, value, color]) => (
-              <div key={label as string} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                <span>{label}:</span>
-                <strong style={{ color: color as string }}>{value}</strong>
-              </div>
-            ))}
           </div>
         </div>
       )}
