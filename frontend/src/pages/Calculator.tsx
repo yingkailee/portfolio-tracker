@@ -106,18 +106,23 @@ export default function Calculator() {
 
       {result && (
         <div style={{ background: '#f3f4f6', padding: 20, borderRadius: 10, marginTop: 20 }}>
-          <h2 style={{ marginBottom: 15 }}>Results</h2>
-          {[
-            ['Final Net Worth', fmt(result.finalNetWorth), '#16a34a', '24px'],
-            ['Initial Capital', fmt(result.initialCapital), '', ''],
-            ['Additional Investments', fmt(result.additionalInvestments), '', ''],
-            ['Total Growth', fmt(result.totalGrowth), '#2563eb', ''],
-          ].map(([label, value, color, size]) => (
-            <div key={label as string} style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>{label}:</span>
-              <strong style={{ color, fontSize: size }}>{value}</strong>
-            </div>
-          ))}
+          <h2 style={{ marginBottom: 15, borderBottom: '1px solid #ddd', paddingBottom: 10 }}>Results</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 10 }}>
+            <span style={{ fontSize: '18px', fontWeight: 600 }}>Final Net Worth:</span>
+            <strong style={{ color: '#16a34a', fontSize: '24px' }}>{fmt(result.finalNetWorth)}</strong>
+          </div>
+          <div style={{ borderTop: '1px solid #ddd', marginTop: 15, paddingTop: 15 }}>
+            {[
+              ['Initial Capital', fmt(result.initialCapital), ''],
+              ['Additional Investments', fmt(result.additionalInvestments), ''],
+              ['Total Growth', fmt(result.totalGrowth), '#2563eb'],
+            ].map(([label, value, color]) => (
+              <div key={label as string} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                <span>{label}:</span>
+                <strong style={{ color: color as string }}>{value}</strong>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
