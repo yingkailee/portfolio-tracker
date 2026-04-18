@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import type { CalculationResponse, Portfolio, Fund } from '../types';
-import { calculateProjection, fetchPortfolios, fetchFunds, calculatePortfolioYield } from '../api';
+import { calculateProjection, fetchPortfolios, fetchFunds } from '../api';
+import { calculatePortfolioYield } from '../utils/calculations';
 
 const fmt = (v: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v);
 const USER_ID = 1;
@@ -45,7 +46,6 @@ export default function Calculator() {
       setPortfolios(p);
       setFunds(f);
       const savedId = localStorage.getItem('selectedPortfolioId');
-      console.log('Calculator mount - savedId:', savedId, 'portfolios:', p.map(x => x.name + '(' + x.id + ')'));
       const target = savedId ? p.find(x => x.id === +savedId) : null;
       if (target) loadPortfolio(target, f);
       else if (p.length) loadPortfolio(p[0], f);

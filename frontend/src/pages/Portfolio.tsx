@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import type { Fund, Allocations, Portfolio } from '../types';
-import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, deleteAllPortfolios, calculatePortfolioYield, validateAllocations } from '../api';
+import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, deleteAllPortfolios } from '../api';
+import { calculatePortfolioYield, validateAllocations } from '../utils/calculations';
 
 const COLORS = ['#2563eb', '#dc2626', '#16a34a', '#9333ea', '#ea580c', '#0891b2'];
 const USER_ID = 1;
@@ -36,7 +37,6 @@ export default function Portfolio() {
       setFunds(f);
       setPortfolios(p);
       const savedId = localStorage.getItem('selectedPortfolioId');
-      console.log('Portfolio mount - savedId:', savedId, 'portfolios:', p.map(x => x.name + '(' + x.id + ')'));
       if (savedId) {
         const target = p.find(x => x.id === +savedId);
         if (target) { setSelectedId(target.id); loadPortfolio(target); return; }
