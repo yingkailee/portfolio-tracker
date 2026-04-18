@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import type { Fund, Allocations, Portfolio } from '../types';
-import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, deleteAllPortfolios } from '../api';
+import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, deleteAllPortfolios, logout } from '../api';
 import { calculatePortfolioYield, validateAllocations } from '../utils/calculations';
 import Dropdown from '../components/Dropdown';
 
@@ -120,11 +120,19 @@ export default function Portfolio() {
     } catch { setError('Failed to delete'); }
   };
 
+  const handleLogout = () => {
+    logout();
+    window.location.href = '/login';
+  };
+
   return (
     <div style={{ padding: 20, maxWidth: 1000, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
         <h1>Portfolio Allocation</h1>
-        <Link to="/calculator" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>Go to Calculator →</Link>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <Link to="/calculator" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>Go to Calculator →</Link>
+          <button onClick={handleLogout} style={{ padding: '10px 20px', background: '#666', color: 'white', border: 'none', borderRadius: 5, cursor: 'pointer' }}>Logout</button>
+        </div>
       </div>
 
       {portfolios.length > 0 && (

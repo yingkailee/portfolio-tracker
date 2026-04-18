@@ -33,7 +33,8 @@ public class DataInitializer {
 
             if (userRepository.count() == 0) {
                 User user = new User();
-                user.setName("Test User");
+                user.setUsername("su");
+                user.setPassword("gw");
                 user = userRepository.save(user);
 
                 Portfolio portfolio = new Portfolio();
