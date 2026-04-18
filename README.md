@@ -37,3 +37,17 @@ Runs on http://localhost:5173
 - Frontend: React + TypeScript + Vite
 - Backend: Spring Boot (Java)
 - Database: H2
+
+## Admin Access
+
+Default credentials (created on first run):
+- **Username:** `su`
+- **Password:** `gw`
+
+Login via the web interface at http://localhost:5173
+
+## Security
+
+- HTTP Basic Authentication with STATELESS sessions
+- Passwords stored using BCryptPasswordEncoder
+- Only-authenticated API requests allowed for /api/**
