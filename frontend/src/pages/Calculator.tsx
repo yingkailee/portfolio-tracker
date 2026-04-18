@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { CalculationResponse, Portfolio, Fund } from '../types';
 import { calculateProjection, fetchPortfolios, fetchFunds } from '../api';
 import { calculatePortfolioYield } from '../utils/calculations';
+import Dropdown from '../components/Dropdown';
 
 const fmt = (v: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v);
 const USER_ID = 1;
@@ -22,19 +23,6 @@ export default function Calculator() {
   const [funds, setFunds] = useState<Fund[]>([]);
   const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(null);
   const [manualYield, setManualYield] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [search, setSearch] = useState('');
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
   const [capital, setCapital] = useState(100000);
   const [savings, setSavings] = useState(20000);
   const [years, setYears] = useState(20);
@@ -74,28 +62,16 @@ export default function Calculator() {
         <Link to="/portfolio" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>← Portfolio</Link>
       </div>
 
-      <div style={{ marginBottom: 20, position: 'relative' }}>
+      <div style={{ marginBottom: 20 }}>
         <label>Portfolio: </label>
-        <div ref={dropdownRef} style={{ position: 'relative', display: 'inline-block' }}>
-          <div onClick={() => setShowDropdown(!showDropdown)} style={{ cursor: 'pointer', padding: '8px 12px', border: '1px solid #ccc', borderRadius: 5, minWidth: 150, background: 'white' }}>
-            {manualYield ? '-- manual --' : selectedPortfolio?.name || '-- select --'} ▾
-          </div>
-          {showDropdown && (
-            <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', border: '1px solid #ccc', borderRadius: 5, minWidth: 200, maxHeight: 200, overflowY: 'auto', zIndex: 100, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
-              <div style={{ padding: 8 }}>
-                <input placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', padding: '4px 8px', marginBottom: 8 }} />
-              </div>
-              <div onClick={() => { setManualYield(true); setSelectedPortfolio(null); setShowDropdown(false); setSearch(''); }} style={{ padding: '8px 12px', cursor: 'pointer', background: manualYield ? '#e5e7eb' : 'white' }} onMouseEnter={e => e.currentTarget.style.background = '#f5f5f5'} onMouseLeave={e => e.currentTarget.style.background = manualYield ? '#e5e7eb' : 'white'}>
-                -- manual --
-              </div>
-              {portfolios.filter(p => p.name.toLowerCase().includes(search.toLowerCase())).map(p => (
-                <div key={p.id} onClick={() => { loadPortfolio(p, funds); setShowDropdown(false); setSearch(''); }} style={{ padding: '8px 12px', cursor: 'pointer', background: p.id === selectedPortfolio?.id ? '#e5e7eb' : 'white' }} onMouseEnter={e => e.currentTarget.style.background = '#f5f5f5'} onMouseLeave={e => e.currentTarget.style.background = p.id === selectedPortfolio?.id ? '#e5e7eb' : 'white'}>
-                  {p.name}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <Dropdown
+          items={portfolios.map(p => ({ id: p.id, label: p.name }))}
+          selectedId={manualYield ? 'manual' : selectedPortfolio?.id ?? null}
+          onSelect={p => loadPortfolio(portfolios.find(x => x.id === p.id)!, funds)}
+          placeholder="-- select --"
+          manualOption={{ id: 'manual', label: '-- manual --' }}
+          onManual={() => { setManualYield(true); setSelectedPortfolio(null); }}
+        />
         {selectedPortfolio && <span style={{ marginLeft: 10, color: '#666' }}>(yield: {yield_.toFixed(2)}%)</span>}
       </div>
 
