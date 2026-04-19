@@ -23,8 +23,9 @@ export default function Login() {
     try {
       const credentials = btoa(`${username}:${password}`);
 
-      const res = await fetch('http://localhost:8080/api/me', {
+      const res = await fetch('http://localhost:8080/api/funds', {
         headers: { 'Authorization': `Basic ${credentials}` },
+        cache: 'no-store',
       });
 
       if (res.ok) {
