@@ -107,6 +107,17 @@ h3 {
   color: white;
   text-decoration: none;
   border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.btn:active {
+  opacity: 0.8;
 }
 
 .btn-green {
@@ -115,6 +126,10 @@ h3 {
 
 .btn-red {
   background: #dc2626;
+}
+
+.btn-red:hover {
+  background: #b91c1c;
 }
 
 .btn-gray {
