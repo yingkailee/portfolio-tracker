@@ -23,7 +23,6 @@ export default function PortfolioPicker({ portfolios, selectedId, onSelect }: Po
           if (portfolio) onSelect(portfolio);
         }}
         placeholder="-- select --"
-        pickerStyle={true}
       />
     </div>
   );

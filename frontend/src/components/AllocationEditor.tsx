@@ -76,8 +76,8 @@ export default function AllocationEditor({
         <button
           onClick={handleCreate}
           disabled={!name || !isValidAllocation}
-          className="btn"
-          style={name && isValidAllocation ? { background: '#ec4899', color: 'black' } : undefined}
+          className="btn btn-green"
+          style={{ background: name && isValidAllocation ? '#16a34a' : undefined }}
         >
           {savedMsg === 'Saved!' ? 'Saved!' : 'Save New Portfolio'}
         </button>
@@ -85,7 +85,7 @@ export default function AllocationEditor({
           onClick={handleUpdate}
           disabled={!selectedId || !isValidAllocation}
           className="btn"
-          style={selectedId && isValidAllocation ? { background: '#ec4899', color: 'black' } : undefined}
+          style={{ background: selectedId && isValidAllocation ? '#2563eb' : undefined }}
         >
           {savedMsg === 'Updated!' ? 'Updated!' : 'Update Portfolio'}
         </button>
@@ -93,6 +93,7 @@ export default function AllocationEditor({
           onClick={onDeleteAll}
           disabled={portfolios.length === 0}
           className="btn btn-red"
+          style={{ background: portfolios.length > 0 ? '#dc2626' : undefined }}
         >
           Delete All
         </button>

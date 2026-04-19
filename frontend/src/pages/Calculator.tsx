@@ -5,7 +5,6 @@ import { calculateProjection, fetchPortfolios, fetchFunds, getStoredPortfolios, 
 import { calculatePortfolioYield } from '../utils/calculations';
 import Dropdown from '../components/Dropdown';
 import AuthButton from '../components/AuthButton';
-import ResultsDisplay from '../components/ResultsDisplay';
 
 const fmt = (v: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v);
 
@@ -107,7 +106,27 @@ export default function Calculator() {
       <Slider label="Time Horizon" value={years} onChange={setYears} min={1} max={50} step={1} format={v => `${v} years`} />
       <Slider label="Portfolio Yield" value={yield_} onChange={setYield} min={0} max={20} step={0.5} format={v => `${v.toFixed(2)}%`} />
 
-      {result && <ResultsDisplay result={result} />}
+      {result && (
+        <div className="alert-result">
+          <h2 className="section-header">Results</h2>
+          <div className="result-row">
+            <span>Initial Capital:</span>
+            <span>{fmt(result.initialCapital)}</span>
+          </div>
+          <div className="result-row">
+            <span>Additional Investments:</span>
+            <span>{fmt(result.additionalInvestments)}</span>
+          </div>
+          <div className="result-row-lg">
+            <span>Total Growth:</span>
+            <span style={{ color: '#2563eb' }}>{fmt(result.totalGrowth)}</span>
+          </div>
+          <div className="result-total">
+            <span className="result-label">Final Net Worth: </span>
+            <strong style={{ color: '#16a34a', fontSize: '24px' }}>{fmt(result.finalNetWorth)}</strong>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
