@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import AuthForm from '../components/AuthForm';
 
 export default function Register() {
   const [error, setError] = useState('');
@@ -48,27 +48,14 @@ export default function Register() {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#f3f4f6' }}>
-      <div style={{ background: 'white', padding: 40, borderRadius: 10, boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: 350 }}>
-        <h1 style={{ textAlign: 'center', marginBottom: 30, fontSize: 24 }}>Register</h1>
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', marginBottom: 5 }}>Username</label>
-            <input name="username" required minLength={3} style={{ width: '100%', padding: '10px 12px', border: '1px solid #ddd', borderRadius: 5, fontSize: 16 }} />
-          </div>
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', marginBottom: 5 }}>Password</label>
-            <input name="password" type="password" required minLength={4} style={{ width: '100%', padding: '10px 12px', border: '1px solid #ddd', borderRadius: 5, fontSize: 16 }} />
-          </div>
-          {error && <div style={{ color: 'red', marginBottom: 15 }}>{error}</div>}
-          <button type="submit" disabled={loading} style={{ width: '100%', padding: 12, background: '#16a34a', color: 'white', border: 'none', borderRadius: 5, fontSize: 16, cursor: 'pointer' }}>
-            {loading ? 'Creating account...' : 'Create Account'}
-          </button>
-        </form>
-        <div style={{ marginTop: 20, textAlign: 'center' }}>
-          Already have an account? <Link to="/login" style={{ color: '#2563eb' }}>Login</Link>
-        </div>
-      </div>
-    </div>
+    <AuthForm
+      title="Register"
+      buttonText="Create Account"
+      buttonColor="#16a34a"
+      linkTo={{ label: 'Already have an account? ', href: '/login', text: 'Login' }}
+      onSubmit={handleSubmit}
+      loading={loading}
+      error={error}
+    />
   );
 }
