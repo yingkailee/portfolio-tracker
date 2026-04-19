@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { CalculationResponse, Portfolio, Fund } from '../types';
-import { calculateProjection, fetchPortfolios, fetchFunds, getStoredPortfolios, storePortfolio, getUserId, DEFAULT_ALLOCATIONS } from '../api';
+import { calculateProjection, fetchPortfolios, fetchFunds, getStoredPortfolios, storePortfolio, getUserId } from '../api';
 import { calculatePortfolioYield } from '../utils/calculations';
 import Dropdown from '../components/Dropdown';
 import AuthButton from '../components/AuthButton';
@@ -12,13 +12,15 @@ function isLoggedIn() {
   return !!localStorage.getItem('token');
 }
 
+const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 0.7, BND: 0.3 });
+
 const Slider = ({ label, value, onChange, min, max, step, format }: {
   label: string; value: number; onChange: (v: number) => void;
   min: number; max: number; step: number; format: (v: number) => string;
 }) => (
-  <div style={{ marginBottom: 15 }}>
-    <label style={{ display: 'block', marginBottom: 5 }}>{label}: {format(value)}</label>
-    <input type="range" min={min} max={max} step={step} value={value} onChange={e => onChange(+e.target.value)} style={{ width: '100%' }} />
+  <div className="slider-container">
+    <label className="label-block">{label}: {format(value)}</label>
+    <input type="range" min={min} max={max} step={step} value={value} onChange={e => onChange(+e.target.value)} className="range-input" />
   </div>
 );
 
@@ -45,7 +47,6 @@ export default function Calculator() {
       } else {
         let stored = getStoredPortfolios();
         if (stored.length === 0) {
-          const defaultPortfolio = storePortfolio('My Portfolio', DEFAULT_ALLOCATIONS);
           stored = [defaultPortfolio];
         }
         setPortfolios(stored);
@@ -79,11 +80,11 @@ export default function Calculator() {
   }, [capital, savings, years, yield_]);
 
   return (
-    <div style={{ padding: 20, maxWidth: 600, margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
+    <div className="container-narrow">
+      <div className="flex-between" style={{ marginBottom: 20 }}>
         <h1>Calculator</h1>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <Link to="/portfolio" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>← Portfolio</Link>
+        <div className="flex-gap">
+          <Link to="/portfolio" className="btn">← Portfolio</Link>
           <AuthButton />
         </div>
       </div>
@@ -107,22 +108,22 @@ export default function Calculator() {
       <Slider label="Portfolio Yield" value={yield_} onChange={setYield} min={0} max={20} step={0.5} format={v => `${v.toFixed(2)}%`} />
 
       {result && (
-        <div style={{ background: '#f3f4f6', padding: 20, borderRadius: 10, marginTop: 20 }}>
-          <h2 style={{ marginBottom: 15, borderBottom: '1px solid #ddd', paddingBottom: 10 }}>Results</h2>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+        <div className="alert-result">
+          <h2 className="section-header">Results</h2>
+          <div className="result-row">
             <span>Initial Capital:</span>
             <span>{fmt(result.initialCapital)}</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+          <div className="result-row">
             <span>Additional Investments:</span>
             <span>{fmt(result.additionalInvestments)}</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 15 }}>
+          <div className="result-row-lg">
             <span>Total Growth:</span>
             <span style={{ color: '#2563eb' }}>{fmt(result.totalGrowth)}</span>
           </div>
-          <div style={{ borderTop: '1px solid #ddd', paddingTop: 15, display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '18px', fontWeight: 600 }}>Final Net Worth:</span>
+          <div className="result-total">
+            <span className="result-label">Final Net Worth:</span>
             <strong style={{ color: '#16a34a', fontSize: '24px' }}>{fmt(result.finalNetWorth)}</strong>
           </div>
         </div>
