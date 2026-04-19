@@ -38,7 +38,6 @@ export default function AllocationChart({ funds, allocations }: AllocationChartP
           <div key={item.name} style={{ color: COLORS[i % COLORS.length] }}>{item.name}: {item.value}%</div>
         ))}
       </div>
-      <p style={{ textAlign: 'center', marginTop: 10 }}>Yield: <strong>{portfolioYield.toFixed(2)}%</strong></p>
     </div>
   );
 }
