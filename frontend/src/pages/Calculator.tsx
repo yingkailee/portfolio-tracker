@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { CalculationResponse, Portfolio, Fund } from '../types';
-import { calculateProjection, fetchPortfolios, fetchFunds, logout, getStoredPortfolios, storePortfolio } from '../api';
+import { calculateProjection, fetchPortfolios, fetchFunds, getStoredPortfolios, storePortfolio } from '../api';
 import { calculatePortfolioYield } from '../utils/calculations';
 import Dropdown from '../components/Dropdown';
+import LoginButton from '../components/LoginButton';
 
 const fmt = (v: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v);
 const USER_ID = 1;
@@ -78,19 +79,13 @@ export default function Calculator() {
     return () => clearTimeout(id);
   }, [capital, savings, years, yield_]);
 
-  const loggedIn = isLoggedIn();
-
   return (
     <div style={{ padding: 20, maxWidth: 600, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
         <h1>Calculator</h1>
         <div style={{ display: 'flex', gap: 10 }}>
           <Link to="/portfolio" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>← Portfolio</Link>
-          {loggedIn ? (
-            <button onClick={() => { logout(); window.location.href = '/portfolio'; }} style={{ padding: '10px 20px', background: '#666', color: 'white', border: 'none', borderRadius: 5, cursor: 'pointer' }}>Logout</button>
-          ) : (
-            <Link to="/login" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>Login</Link>
-          )}
+          <LoginButton />
         </div>
       </div>
 
