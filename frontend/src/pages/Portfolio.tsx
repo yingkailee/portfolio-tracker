@@ -242,8 +242,8 @@ export default function Portfolio() {
             <button onClick={handleDeleteAll} disabled={portfolios.length === 0} className="btn btn-red" style={{ background: portfolios.length > 0 ? '#dc2626' : undefined }}>
               Delete All
             </button>
-            {error && <div className="action-error">{error}</div>}
           </div>
+          {error && <div className="action-error">{error}</div>}
         </div>
 
         <div className="chart">
