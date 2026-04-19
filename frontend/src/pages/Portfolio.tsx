@@ -10,7 +10,7 @@ import Dropdown from '../components/Dropdown';
 const COLORS = ['#2563eb', '#dc2626', '#16a34a', '#9333ea', '#ea580c', '#0891b2'];
 
 function isLoggedIn() {
-  return !!localStorage.getItem('credentials');
+  return !!localStorage.getItem('token');
 }
 
 export default function Portfolio() {

@@ -9,7 +9,7 @@ import AuthButton from '../components/AuthButton';
 const fmt = (v: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v);
 
 function isLoggedIn() {
-  return !!localStorage.getItem('credentials');
+  return !!localStorage.getItem('token');
 }
 
 const Slider = ({ label, value, onChange, min, max, step, format }: {

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { logout } from '../api';
 
 function isLoggedIn() {
-  return !!localStorage.getItem('credentials');
+  return !!localStorage.getItem('token');
 }
 
 export default function AuthButton() {
