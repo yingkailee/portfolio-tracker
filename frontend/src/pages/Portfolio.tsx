@@ -110,6 +110,7 @@ export default function Portfolio() {
   const availableFunds = funds.filter(f => !selectedTickers.includes(f.ticker));
 
   const handleCreate = () => {
+    setError('');
     if (!isValid) { setError(hasFunds ? 'Allocations must add up to 100%' : 'Select at least one fund'); return; }
     if (!name) { setError('Enter a name'); return; }
     if (portfolios.some(p => p.name === name)) { setError('A portfolio with this name already exists'); return; }
@@ -131,6 +132,7 @@ export default function Portfolio() {
 
   const handleUpdatePortfolio = () => {
     if (!selectedId) return;
+    setError('');
     if (!isValid) { setError(hasFunds ? 'Allocations must add up to 100%' : 'Select at least one fund'); return; }
     const loggedIn = isLoggedIn();
     if (loggedIn) {
@@ -150,6 +152,7 @@ export default function Portfolio() {
   const handleDeleteAll = () => {
     const confirmed = window.confirm('Are you sure you want to DELETE ALL portfolios? This cannot be undone!');
     if (!confirmed) return;
+    setError('');
     const loggedIn = isLoggedIn();
     if (loggedIn) {
       deleteAllPortfolios(getUserId()!).then(() => {
