@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { CalculationResponse, Portfolio, Fund } from '../types';
-import { calculateProjection, fetchPortfolios, fetchFunds, getStoredPortfolios, storePortfolio, getUserId } from '../api';
+import { calculateProjection, fetchPortfolios, fetchFunds, getStoredPortfolios, storePortfolio, getUserId, DEFAULT_ALLOCATIONS } from '../api';
 import { calculatePortfolioYield } from '../utils/calculations';
 import Dropdown from '../components/Dropdown';
 import AuthButton from '../components/AuthButton';
@@ -45,7 +45,7 @@ export default function Calculator() {
       } else {
         let stored = getStoredPortfolios();
         if (stored.length === 0) {
-          const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 1 });
+          const defaultPortfolio = storePortfolio('My Portfolio', DEFAULT_ALLOCATIONS);
           stored = [defaultPortfolio];
         }
         setPortfolios(stored);

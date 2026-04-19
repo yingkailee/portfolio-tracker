@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import type { Fund, Allocations, Portfolio } from '../types';
-import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, deleteAllPortfolios, getStoredPortfolios, storePortfolio, deleteAllStoredPortfolios, getUserId } from '../api';
+import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, deleteAllPortfolios, getStoredPortfolios, storePortfolio, deleteAllStoredPortfolios, getUserId, DEFAULT_ALLOCATIONS } from '../api';
 import AuthButton from '../components/AuthButton';
 import { calculatePortfolioYield, validateAllocations } from '../utils/calculations';
 import Dropdown from '../components/Dropdown';
@@ -16,7 +16,7 @@ function isLoggedIn() {
 export default function Portfolio() {
   const [funds, setFunds] = useState<Fund[]>([]);
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
-  const [allocations, setAllocations] = useState<Allocations>({ VOO: 1 });
+  const [allocations, setAllocations] = useState<Allocations>(DEFAULT_ALLOCATIONS);
   const [selectedTickers, setSelectedTickers] = useState<string[]>(['VOO']);
   const [showPicker, setShowPicker] = useState(false);
   const [name, setName] = useState('');
@@ -36,7 +36,7 @@ export default function Portfolio() {
       } else {
         let stored = getStoredPortfolios();
         if (stored.length === 0) {
-          const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 1 });
+const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 0.7, BND: 0.3 });
           stored = [defaultPortfolio];
         }
         setPortfolios(stored);
@@ -156,7 +156,7 @@ export default function Portfolio() {
       }).catch(() => setError('Failed to delete'));
     } else {
       deleteAllStoredPortfolios();
-      const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 1 });
+      const defaultPortfolio = storePortfolio('My Portfolio', DEFAULT_ALLOCATIONS);
       setPortfolios([defaultPortfolio]);
       resetState();
       loadPortfolio(defaultPortfolio);
@@ -164,8 +164,8 @@ export default function Portfolio() {
   };
 
   const resetState = () => {
-    setAllocations({ VOO: 1 });
-    setSelectedTickers(['VOO']);
+    setAllocations(DEFAULT_ALLOCATIONS);
+    setSelectedTickers(Object.keys(DEFAULT_ALLOCATIONS));
     setName('');
     setSelectedId(null);
     setSavedMsg('');

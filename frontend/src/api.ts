@@ -89,11 +89,9 @@ export function logout() {
   localStorage.removeItem('token');
 }
 
-const GUEST_PORTFOLIOS = 'guestPortfolios';
+export const DEFAULT_ALLOCATIONS: Allocations = { VOO: 0.7, BND: 0.3 };
 
-function isLoggedIn() {
-  return !!localStorage.getItem('credentials');
-}
+const GUEST_PORTFOLIOS = 'guestPortfolios';
 
 export function getStoredPortfolios(): Portfolio[] {
   const data = localStorage.getItem(GUEST_PORTFOLIOS);
@@ -131,5 +129,5 @@ function saveToLocalStorage(portfolios: Portfolio[]): void {
 }
 
 export function isGuestMode(): boolean {
-  return !isLoggedIn();
+  return !localStorage.getItem('token');
 }
