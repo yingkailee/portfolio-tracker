@@ -31,6 +31,8 @@ export default function StockEditor({
 
   const selectedFunds = funds.filter(f => selectedTickers.includes(f.ticker));
   const availableFunds = funds.filter(f => !selectedTickers.includes(f.ticker));
+  const totalPercent = Object.values(allocations).reduce((sum, v) => sum + v, 0) * 100;
+  const isValid = Math.abs(totalPercent - 100) < 0.1;
 
   const handleAllocationChange = (ticker: string, value: number) => {
     onAllocationsChange({ ...allocations, [ticker]: value / 100 });
@@ -55,6 +57,9 @@ export default function StockEditor({
 
   return (
     <div>
+      <div className="alloc-total" style={{ marginBottom: 10, fontWeight: 'bold', color: isValid ? '#16a34a' : '#dc2626' }}>
+        Total: {Math.round(totalPercent)}% {isValid ? '✓' : '(must be 100%)'}
+      </div>
       <div className="alloc-list">
         {selectedFunds.map(fund => (
           <div key={fund.ticker} className="alloc-item">

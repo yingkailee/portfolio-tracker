@@ -62,6 +62,9 @@ export default function Portfolio() {
     localStorage.setItem('selectedPortfolioId', p.id.toString());
   };
 
+  const totalAllocation = Object.values(allocations).reduce((sum, v) => sum + v, 0);
+  const isValidAllocation = Math.abs(totalAllocation - 1) < 0.001;
+
   const handleCreate = () => {
     setError('');
     if (!name) { setError('Enter a name'); return; }
@@ -139,6 +142,7 @@ export default function Portfolio() {
           selectedTickers={selectedTickers}
           selectedId={selectedId}
           name={name}
+          isValidAllocation={isValidAllocation}
           onAllocationsChange={setAllocations}
           onSelectedTickersChange={setSelectedTickers}
           onNameChange={setName}

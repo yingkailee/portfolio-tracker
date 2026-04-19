@@ -9,6 +9,7 @@ interface AllocationEditorProps {
   selectedTickers: string[];
   selectedId: number | string | null;
   name: string;
+  isValidAllocation: boolean;
   onAllocationsChange: (a: Allocations) => void;
   onSelectedTickersChange: (t: string[]) => void;
   onNameChange: (n: string) => void;
@@ -27,6 +28,7 @@ export default function AllocationEditor({
   selectedTickers,
   selectedId,
   name,
+  isValidAllocation,
   onAllocationsChange,
   onSelectedTickersChange,
   onNameChange,
@@ -73,17 +75,17 @@ export default function AllocationEditor({
       <div className="action-row">
         <button
           onClick={handleCreate}
-          disabled={!name}
+          disabled={!name || !isValidAllocation}
           className="btn btn-green"
-          style={{ background: name ? '#16a34a' : undefined }}
+          style={{ background: name && isValidAllocation ? '#16a34a' : undefined }}
         >
           {savedMsg === 'Saved!' ? 'Saved!' : 'Save New Portfolio'}
         </button>
         <button
           onClick={handleUpdate}
-          disabled={!selectedId}
+          disabled={!selectedId || !isValidAllocation}
           className="btn"
-          style={{ background: selectedId ? '#2563eb' : undefined }}
+          style={{ background: selectedId && isValidAllocation ? '#2563eb' : undefined }}
         >
           {savedMsg === 'Updated!' ? 'Updated!' : 'Update Portfolio'}
         </button>
