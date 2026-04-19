@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import AuthForm from '../components/AuthForm';
-import { setUserId } from '../api';
+import { setUserId, setToken } from '../api';
 
 export default function Register() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  if (localStorage.getItem('credentials')) {
+  if (localStorage.getItem('token')) {
     window.location.href = '/portfolio';
     return null;
   }
@@ -35,8 +35,7 @@ export default function Register() {
 
       if (res.ok) {
         const data = await res.json();
-        const credentials = btoa(`${username}:${password}`);
-        localStorage.setItem('credentials', credentials);
+        setToken(data.token);
         setUserId(data.userId);
         window.location.href = '/portfolio';
       } else {

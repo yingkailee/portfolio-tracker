@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import AuthForm from '../components/AuthForm';
-import { setUserId } from '../api';
+import { setUserId, setToken } from '../api';
 
 export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  if (localStorage.getItem('credentials')) {
+  if (localStorage.getItem('token')) {
     window.location.href = '/portfolio';
     return null;
   }
@@ -21,16 +21,15 @@ export default function Login() {
     const password = formData.get('password') as string;
 
     try {
-      const credentials = btoa(`${username}:${password}`);
-
-      const res = await fetch('http://localhost:8080/api/funds', {
-        headers: { 'Authorization': `Basic ${credentials}` },
-        cache: 'no-store',
+      const res = await fetch('http://localhost:8080/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
       });
 
       if (res.ok) {
-        localStorage.setItem('credentials', credentials);
         const data = await res.json();
+        setToken(data.token);
         setUserId(data.userId);
         window.location.href = '/portfolio';
       } else {

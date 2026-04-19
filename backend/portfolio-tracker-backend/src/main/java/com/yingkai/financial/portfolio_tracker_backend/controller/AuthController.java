@@ -1,5 +1,6 @@
 package com.yingkai.financial.portfolio_tracker_backend.controller;
 
+import com.yingkai.financial.portfolio_tracker_backend.config.JwtUtil;
 import com.yingkai.financial.portfolio_tracker_backend.dto.RegisterRequest;
 import com.yingkai.financial.portfolio_tracker_backend.entity.Portfolio;
 import com.yingkai.financial.portfolio_tracker_backend.entity.User;
@@ -20,7 +21,18 @@ public class AuthController {
 
     private final UserRepository userRepository;
     private final PortfolioRepository portfolioRepository;
+    private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody RegisterRequest request) {
+        User user = userRepository.findByUsername(request.getUsername());
+        if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password"));
+        }
+        String token = jwtUtil.generateToken(user.getUsername(), user.getId());
+        return ResponseEntity.ok(Map.of("token", token, "userId", user.getId(), "username", user.getUsername()));
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -47,21 +59,21 @@ public class AuthController {
         portfolio.setUser(user);
         portfolioRepository.save(portfolio);
 
-        return ResponseEntity.ok(Map.of("message", "User created", "userId", user.getId()));
+        String token = jwtUtil.generateToken(user.getUsername(), user.getId());
+        return ResponseEntity.ok(Map.of("token", token, "userId", user.getId()));
     }
 
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String auth) {
-        if (auth == null || !auth.startsWith("Basic ")) {
+        if (auth == null || !auth.startsWith("Bearer ")) {
             return ResponseEntity.status(401).build();
         }
-        String encoded = auth.substring(6);
-        String decoded = new String(java.util.Base64.getDecoder().decode(encoded));
-        String username = decoded.split(":")[0];
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
+        String token = auth.substring(7);
+        if (!jwtUtil.validateToken(token)) {
             return ResponseEntity.status(401).build();
         }
-        return ResponseEntity.ok(Map.of("userId", user.getId(), "username", user.getUsername()));
+        String username = jwtUtil.getUsername(token);
+        int userId = jwtUtil.getUserId(token);
+        return ResponseEntity.ok(Map.of("userId", userId, "username", username));
     }
 }

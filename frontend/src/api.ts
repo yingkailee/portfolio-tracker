@@ -3,8 +3,8 @@ import type { Fund, Allocations, CalculationResponse, Portfolio } from './types'
 const API_BASE = 'http://localhost:8080/api';
 
 function getAuthHeader(): string {
-  const creds = localStorage.getItem('credentials');
-  return creds ? `Basic ${creds}` : '';
+  const token = localStorage.getItem('token');
+  return token ? `Bearer ${token}` : '';
 }
 
 export function getUserId(): number | null {
@@ -14,6 +14,14 @@ export function getUserId(): number | null {
 
 export function setUserId(id: number): void {
   localStorage.setItem('userId', id.toString());
+}
+
+export function getToken(): string | null {
+  return localStorage.getItem('token');
+}
+
+export function setToken(token: string): void {
+  localStorage.setItem('token', token);
 }
 
 export async function fetchFunds(): Promise<Fund[]> {
@@ -78,7 +86,7 @@ export async function calculateProjection(request: {
 }
 
 export function logout() {
-  localStorage.removeItem('credentials');
+  localStorage.removeItem('token');
 }
 
 const GUEST_PORTFOLIOS = 'guestPortfolios';
