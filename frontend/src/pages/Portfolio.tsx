@@ -155,7 +155,9 @@ export default function Portfolio() {
     const loggedIn = isLoggedIn();
     if (loggedIn) {
       deleteAllPortfolios(getUserId()!).then(() => {
-        fetchPortfolios(getUserId()!).then(p => { setPortfolios(p); resetState(); });
+        createPortfolio('My Portfolio', DEFAULT_ALLOCATIONS, getUserId()!).then(newP => {
+          fetchPortfolios(getUserId()!).then(p => { setPortfolios(p); resetState(); loadPortfolio(newP); });
+        });
       }).catch(() => setError('Failed to delete'));
     } else {
       deleteAllStoredPortfolios();
@@ -169,7 +171,7 @@ export default function Portfolio() {
   const resetState = () => {
     setAllocations(DEFAULT_ALLOCATIONS);
     setSelectedTickers(Object.keys(DEFAULT_ALLOCATIONS));
-    setName('');
+    setName('My Portfolio');
     setSelectedId(null);
     setSavedMsg('');
   };
