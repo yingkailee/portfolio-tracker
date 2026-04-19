@@ -28,12 +28,12 @@ public class DataInitializer {
         return args -> {
             if (fundRepository.count() == 0) {
                 fundRepository.saveAll(List.of(
-                    makeFund("VOO", "Vanguard S&P 500 ETF", 10.5, "Tracks S&P 500 index"),
-                    makeFund("VTI", "Vanguard Total Stock Market ETF", 10.2, "Tracks entire US stock market"),
-                    makeFund("BND", "Vanguard Total Bond Market ETF", 4.5, "Tracks US investment-grade bonds"),
-                    makeFund("VNQ", "Vanguard Real Estate ETF", 8.5, "Tracks US real estate sector"),
-                    makeFund("QQQ", "Invesco QQQ Trust", 14.2, "Tracks Nasdaq-100 index"),
-                    makeFund("VEA", "Vanguard FTSE Developed Markets ETF", 7.8, "Tracks developed international markets")
+                    new Fund(null, "VOO", "Vanguard S&P 500 ETF", 10.5, "Tracks S&P 500 index", 0.0),
+                    new Fund(null, "VTI", "Vanguard Total Stock Market ETF", 10.2, "Tracks entire US stock market", 0.0),
+                    new Fund(null, "BND", "Vanguard Total Bond Market ETF", 4.5, "Tracks US investment-grade bonds", 0.0),
+                    new Fund(null, "VNQ", "Vanguard Real Estate ETF", 8.5, "Tracks US real estate sector", 0.0),
+                    new Fund(null, "QQQ", "Invesco QQQ Trust", 14.2, "Tracks Nasdaq-100 index", 0.0),
+                    new Fund(null, "VEA", "Vanguard FTSE Developed Markets ETF", 7.8, "Tracks developed international markets", 0.0)
                 ));
             }
 
@@ -50,15 +50,5 @@ public class DataInitializer {
                 portfolioRepository.save(portfolio);
             }
         };
-    }
-
-    private Fund makeFund(String ticker, String name, double yield_, String desc) {
-        Fund f = new Fund();
-        f.setTicker(ticker);
-        f.setName(name);
-        f.setAverageAnnualYield(yield_);
-        f.setDescription(desc);
-        f.setWeight(0.0);
-        return f;
     }
 }
