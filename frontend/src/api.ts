@@ -30,7 +30,7 @@ export async function createPortfolio(name: string, allocations: Allocations, us
   return res.json();
 }
 
-export async function savePortfolio(id: number, name: string, allocations: Allocations): Promise<Portfolio> {
+export async function savePortfolio(id: number | string, name: string, allocations: Allocations): Promise<Portfolio> {
   const res = await fetch(`${API_BASE}/portfolios/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', 'Authorization': getAuthHeader() },
@@ -39,7 +39,7 @@ export async function savePortfolio(id: number, name: string, allocations: Alloc
   return res.json();
 }
 
-export async function deletePortfolio(id: number): Promise<void> {
+export async function deletePortfolio(id: number | string): Promise<void> {
   await fetch(`${API_BASE}/portfolios/${id}`, {
     method: 'DELETE',
     headers: { 'Authorization': getAuthHeader() },
@@ -70,4 +70,49 @@ export async function calculateProjection(request: {
 
 export function logout() {
   localStorage.removeItem('credentials');
+}
+
+const GUEST_PORTFOLIOS = 'guestPortfolios';
+
+function isLoggedIn() {
+  return !!localStorage.getItem('credentials');
+}
+
+export function getStoredPortfolios(): Portfolio[] {
+  const data = localStorage.getItem(GUEST_PORTFOLIOS);
+  return data ? JSON.parse(data) : [];
+}
+
+export function storePortfolio(name: string, allocations: Allocations, id?: number | string): Portfolio {
+  const portfolios = getStoredPortfolios();
+  if (id) {
+    const idx = portfolios.findIndex(p => p.id === id || String(p.id) === id);
+    if (idx >= 0) {
+      portfolios[idx] = { ...portfolios[idx], name, allocations: JSON.stringify(allocations) };
+      saveToLocalStorage(portfolios);
+      return portfolios[idx];
+    }
+  }
+  const newId = Math.max(0, ...portfolios.map(p => p.id as number)) + 1;
+  const portfolio: Portfolio = { id: newId, name, allocations: JSON.stringify(allocations), userId: 0 };
+  portfolios.push(portfolio);
+  saveToLocalStorage(portfolios);
+  return portfolio;
+}
+
+export function deleteStoredPortfolio(id: number): void {
+  const portfolios = getStoredPortfolios().filter(p => p.id !== id);
+  saveToLocalStorage(portfolios);
+}
+
+export function deleteAllStoredPortfolios(): void {
+  saveToLocalStorage([]);
+}
+
+function saveToLocalStorage(portfolios: Portfolio[]): void {
+  localStorage.setItem(GUEST_PORTFOLIOS, JSON.stringify(portfolios));
+}
+
+export function isGuestMode(): boolean {
+  return !isLoggedIn();
 }

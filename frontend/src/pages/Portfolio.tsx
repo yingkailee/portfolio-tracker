@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import type { Fund, Allocations, Portfolio } from '../types';
-import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, deleteAllPortfolios, logout } from '../api';
+import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, deleteAllPortfolios, logout, getStoredPortfolios, storePortfolio, deleteAllStoredPortfolios } from '../api';
 import { calculatePortfolioYield, validateAllocations } from '../utils/calculations';
 import Dropdown from '../components/Dropdown';
 
 const COLORS = ['#2563eb', '#dc2626', '#16a34a', '#9333ea', '#ea580c', '#0891b2'];
 const USER_ID = 1;
+
+function isLoggedIn() {
+  return !!localStorage.getItem('credentials');
+}
 
 export default function Portfolio() {
   const [funds, setFunds] = useState<Fund[]>([]);
@@ -16,21 +20,40 @@ export default function Portfolio() {
   const [selectedTickers, setSelectedTickers] = useState<string[]>(['VOO']);
   const [showPicker, setShowPicker] = useState(false);
   const [name, setName] = useState('');
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<number | string | null>(null);
   const [error, setError] = useState('');
   const [savedMsg, setSavedMsg] = useState('');
 
   useEffect(() => {
-    Promise.all([fetchFunds(), fetchPortfolios(USER_ID)]).then(([f, p]) => {
+    const loggedIn = isLoggedIn();
+    Promise.all([fetchFunds()]).then(([f]) => {
       setFunds(f);
-      setPortfolios(p);
-      const savedId = localStorage.getItem('selectedPortfolioId');
-      if (savedId) {
-        const target = p.find(x => x.id === +savedId);
-        if (target) { setSelectedId(target.id); loadPortfolio(target); return; }
+      if (loggedIn) {
+        fetchPortfolios(USER_ID).then(p => {
+          setPortfolios(p);
+          loadSavedPortfolio(p);
+        });
+      } else {
+        let stored = getStoredPortfolios();
+        if (stored.length === 0) {
+          const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 1 });
+          stored = [defaultPortfolio];
+        }
+        setPortfolios(stored);
+        loadSavedPortfolio(stored);
       }
-      if (p.length) { setSelectedId(p[0].id); loadPortfolio(p[0]); }
     });
+
+    function loadSavedPortfolio(p: Portfolio[]) {
+      if (p.length) {
+        const savedId = localStorage.getItem('selectedPortfolioId');
+        if (savedId) {
+          const target = p.find(x => String(x.id) === savedId);
+          if (target) { setSelectedId(target.id); loadPortfolio(target); return; }
+        }
+        if (p[0]) { setSelectedId(Number(p[0].id)); loadPortfolio(p[0]); }
+      }
+    }
   }, []);
 
   const loadPortfolio = (p: Portfolio) => {
@@ -38,7 +61,7 @@ export default function Portfolio() {
     setAllocations(allocs);
     setSelectedTickers(Object.keys(allocs));
     setName(p.name);
-    setSelectedId(p.id);
+    setSelectedId(p.id as number);
     setSavedMsg('');
     localStorage.setItem('selectedPortfolioId', p.id.toString());
   };
@@ -85,45 +108,73 @@ export default function Portfolio() {
 
   const availableFunds = funds.filter(f => !selectedTickers.includes(f.ticker));
 
-  const handleSave = async () => {
+  const handleCreate = () => {
     if (!isValid) { setError(hasFunds ? 'Allocations must add up to 100%' : 'Select at least one fund'); return; }
     if (!name) { setError('Enter a name'); return; }
     if (portfolios.some(p => p.name === name)) { setError('A portfolio with this name already exists'); return; }
-    try {
-      const newPortfolio = await createPortfolio(name, allocations, USER_ID);
+    const loggedIn = isLoggedIn();
+    if (loggedIn) {
+      createPortfolio(name, allocations, USER_ID).then(newPortfolio => {
+        setSavedMsg('Saved!');
+        setError('');
+        fetchPortfolios(USER_ID).then(p => { setPortfolios(p); setSelectedId(Number(newPortfolio.id)); });
+      }).catch(() => setError('Failed to save'));
+    } else {
+      const newPortfolio = storePortfolio(name, allocations);
       setSavedMsg('Saved!');
       setError('');
-      const updated = await fetchPortfolios(USER_ID);
-      setPortfolios(updated);
-      setSelectedId(newPortfolio.id);
-    } catch { setError('Failed to save'); }
+      setPortfolios(getStoredPortfolios());
+      setSelectedId(Number(newPortfolio.id));
+    }
   };
 
-  const handleUpdate = async () => {
+  const handleUpdatePortfolio = () => {
     if (!selectedId) return;
     if (!isValid) { setError(hasFunds ? 'Allocations must add up to 100%' : 'Select at least one fund'); return; }
-    try {
-      await savePortfolio(selectedId, name, allocations);
+    const loggedIn = isLoggedIn();
+    if (loggedIn) {
+      savePortfolio(selectedId as number, name, allocations).then(() => {
+        setSavedMsg('Updated!');
+        setError('');
+        fetchPortfolios(USER_ID).then(p => setPortfolios(p));
+      }).catch(() => setError('Failed to update'));
+    } else {
+      storePortfolio(name, allocations, selectedId);
       setSavedMsg('Updated!');
       setError('');
-      const updated = await fetchPortfolios(USER_ID);
-      setPortfolios(updated);
-    } catch { setError('Failed to update'); }
+      setPortfolios(getStoredPortfolios());
+    }
   };
 
-  const handleDeleteAll = async () => {
+  const handleDeleteAll = () => {
     const confirmed = window.confirm('Are you sure you want to DELETE ALL portfolios? This cannot be undone!');
     if (!confirmed) return;
-    try {
-      await deleteAllPortfolios(USER_ID);
-      fetchPortfolios(USER_ID).then(p => { setPortfolios(p); setAllocations({ VOO: 1 }); setSelectedTickers(['VOO']); setName(''); setSelectedId(null); });
-    } catch { setError('Failed to delete'); }
+    const loggedIn = isLoggedIn();
+    if (loggedIn) {
+      deleteAllPortfolios(USER_ID).then(() => {
+        fetchPortfolios(USER_ID).then(p => { setPortfolios(p); resetState(); });
+      }).catch(() => setError('Failed to delete'));
+    } else {
+      deleteAllStoredPortfolios();
+      setPortfolios([]);
+      resetState();
+    }
+  };
+
+  const resetState = () => {
+    setAllocations({ VOO: 1 });
+    setSelectedTickers(['VOO']);
+    setName('');
+    setSelectedId(null);
+    setSavedMsg('');
   };
 
   const handleLogout = () => {
     logout();
-    window.location.href = '/login';
+    window.location.href = '/portfolio';
   };
+
+  const loggedIn = isLoggedIn();
 
   return (
     <div style={{ padding: 20, maxWidth: 1000, margin: '0 auto' }}>
@@ -131,9 +182,19 @@ export default function Portfolio() {
         <h1>Portfolio Allocation</h1>
         <div style={{ display: 'flex', gap: 10 }}>
           <Link to="/calculator" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>Go to Calculator →</Link>
-          <button onClick={handleLogout} style={{ padding: '10px 20px', background: '#666', color: 'white', border: 'none', borderRadius: 5, cursor: 'pointer' }}>Logout</button>
+          {loggedIn ? (
+            <button onClick={handleLogout} style={{ padding: '10px 20px', background: '#666', color: 'white', border: 'none', borderRadius: 5, cursor: 'pointer' }}>Logout</button>
+          ) : (
+            <Link to="/login" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>Login</Link>
+          )}
         </div>
       </div>
+
+      {!loggedIn && (
+        <div style={{ background: '#fef3c7', padding: 15, borderRadius: 5, marginBottom: 20 }}>
+          Guest mode: portfolios saved locally. <Link to="/login" style={{ color: '#2563eb' }}>Login</Link> to save to database.
+        </div>
+      )}
 
       {portfolios.length > 0 && (
         <div style={{ marginBottom: 20 }}>
@@ -179,19 +240,15 @@ export default function Portfolio() {
             )}
           </div>
 
-          <button onClick={handleSave} disabled={!isValid || !name} style={{ marginTop: 20, marginRight: 10, padding: '10px 20px', background: isValid && name ? '#16a34a' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: isValid && name ? 'pointer' : 'not-allowed' }}>
+          <button onClick={handleCreate} disabled={!isValid || !name} style={{ marginTop: 20, marginRight: 10, padding: '10px 20px', background: isValid && name ? '#16a34a' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: isValid && name ? 'pointer' : 'not-allowed' }}>
             {savedMsg === 'Saved!' ? 'Saved!' : 'Save New Portfolio'}
           </button>
-          {selectedId && (
-            <>
-              <button onClick={handleUpdate} disabled={!isValid} style={{ marginTop: 20, marginRight: 10, padding: '10px 20px', background: isValid ? '#2563eb' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: isValid ? 'pointer' : 'not-allowed' }}>
-                {savedMsg === 'Updated!' ? 'Updated!' : 'Update Current Portfolio'}
-              </button>
-              <button onClick={handleDeleteAll} style={{ marginTop: 20, padding: '10px 20px', background: '#dc2626', color: 'white', border: 'none', borderRadius: 5, cursor: 'pointer' }}>
-                Delete All Portfolios
-              </button>
-            </>
-          )}
+          <button onClick={handleUpdatePortfolio} disabled={!selectedId || !isValid} style={{ marginTop: 20, marginRight: 10, padding: '10px 20px', background: selectedId && isValid ? '#2563eb' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: selectedId && isValid ? 'pointer' : 'not-allowed' }}>
+            {savedMsg === 'Updated!' ? 'Updated!' : 'Update Portfolio'}
+          </button>
+          <button onClick={handleDeleteAll} disabled={portfolios.length === 0} style={{ marginTop: 20, padding: '10px 20px', background: portfolios.length > 0 ? '#dc2626' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: portfolios.length > 0 ? 'pointer' : 'not-allowed' }}>
+            Delete All
+          </button>
           {error && <div style={{ color: 'red', marginTop: 10 }}>{error}</div>}
         </div>
 

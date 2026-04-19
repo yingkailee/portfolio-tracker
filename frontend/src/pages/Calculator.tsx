@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { CalculationResponse, Portfolio, Fund } from '../types';
-import { calculateProjection, fetchPortfolios, fetchFunds } from '../api';
+import { calculateProjection, fetchPortfolios, fetchFunds, logout, getStoredPortfolios, storePortfolio } from '../api';
 import { calculatePortfolioYield } from '../utils/calculations';
 import Dropdown from '../components/Dropdown';
 
 const fmt = (v: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v);
 const USER_ID = 1;
+
+function isLoggedIn() {
+  return !!localStorage.getItem('credentials');
+}
 
 const Slider = ({ label, value, onChange, min, max, step, format }: {
   label: string; value: number; onChange: (v: number) => void;
@@ -30,14 +34,33 @@ export default function Calculator() {
   const [result, setResult] = useState<CalculationResponse | null>(null);
 
   useEffect(() => {
-    Promise.all([fetchPortfolios(USER_ID), fetchFunds()]).then(([p, f]) => {
-      setPortfolios(p);
+    const loggedIn = isLoggedIn();
+    Promise.all([fetchFunds()]).then(([f]) => {
       setFunds(f);
-      const savedId = localStorage.getItem('selectedPortfolioId');
-      const target = savedId ? p.find(x => x.id === +savedId) : null;
-      if (target) loadPortfolio(target, f);
-      else if (p.length) loadPortfolio(p[0], f);
+      if (loggedIn) {
+        fetchPortfolios(USER_ID).then(p => {
+          setPortfolios(p);
+          loadSavedPortfolio(p, f);
+        });
+      } else {
+        let stored = getStoredPortfolios();
+        if (stored.length === 0) {
+          const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 1 });
+          stored = [defaultPortfolio];
+        }
+        setPortfolios(stored);
+        loadSavedPortfolio(stored, f);
+      }
     });
+
+    function loadSavedPortfolio(p: Portfolio[], f: Fund[]) {
+      if (p.length) {
+        const savedId = localStorage.getItem('selectedPortfolioId');
+        const target = savedId ? p.find(x => String(x.id) === savedId) : null;
+        if (target) loadPortfolio(target, f);
+        else loadPortfolio(p[0], f);
+      }
+    }
   }, []);
 
   const loadPortfolio = (p: Portfolio, f: Fund[]) => {
@@ -55,11 +78,20 @@ export default function Calculator() {
     return () => clearTimeout(id);
   }, [capital, savings, years, yield_]);
 
+  const loggedIn = isLoggedIn();
+
   return (
     <div style={{ padding: 20, maxWidth: 600, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
         <h1>Calculator</h1>
-        <Link to="/portfolio" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>← Portfolio</Link>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <Link to="/portfolio" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>← Portfolio</Link>
+          {loggedIn ? (
+            <button onClick={() => { logout(); window.location.href = '/portfolio'; }} style={{ padding: '10px 20px', background: '#666', color: 'white', border: 'none', borderRadius: 5, cursor: 'pointer' }}>Logout</button>
+          ) : (
+            <Link to="/login" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>Login</Link>
+          )}
+        </div>
       </div>
 
       <div style={{ marginBottom: 20 }}>

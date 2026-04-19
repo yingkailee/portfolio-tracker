@@ -1,11 +1,8 @@
 # Portfolio Tracker
 
-**Early Development** - Not production ready.
-
 ## Setup
 
 ```bash
-# Frontend dependencies
 cd frontend && npm install
 ```
 
@@ -25,17 +22,13 @@ npm run dev
 ```
 Runs on http://localhost:5173
 
-## Admin Access
-
-- **Username:** `su`
-- **Password:** `gw`
-
 ## Features
 
 - Create portfolios with custom fund allocations
 - Add/remove funds (VOO, VTI, BND, etc.)
 - Calculate net worth projections
 - Multiple portfolios supported
+- Guest mode: use locally without login, login to save to database
 
 ## Tech Stack
 

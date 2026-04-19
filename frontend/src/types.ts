@@ -27,8 +27,9 @@ export interface CalculationResponse {
 export type Allocations = Record<string, number>;
 
 export interface Portfolio {
-  id: number;
+  id: number | string;
   name: string;
   allocations: string;
-  user: { id: number; name: string };
+  user?: { id: number; name: string };
+  userId?: number;
 }
