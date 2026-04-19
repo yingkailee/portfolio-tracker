@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import type { Fund, Allocations, Portfolio } from '../types';
 import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, deleteAllPortfolios, getStoredPortfolios, storePortfolio, deleteAllStoredPortfolios } from '../api';
-import LoginButton from '../components/LoginButton';
+import AuthButton from '../components/AuthButton';
 import { calculatePortfolioYield, validateAllocations } from '../utils/calculations';
 import Dropdown from '../components/Dropdown';
 
@@ -176,7 +176,7 @@ export default function Portfolio() {
         <h1>Portfolio Allocation</h1>
         <div style={{ display: 'flex', gap: 10 }}>
           <Link to="/calculator" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>Go to Calculator →</Link>
-          <LoginButton />
+          <AuthButton />
         </div>
       </div>
 

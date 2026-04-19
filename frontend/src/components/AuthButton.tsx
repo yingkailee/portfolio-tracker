@@ -5,7 +5,7 @@ function isLoggedIn() {
   return !!localStorage.getItem('credentials');
 }
 
-export default function LoginButton() {
+export default function AuthButton() {
   const loggedIn = isLoggedIn();
 
   if (loggedIn) {

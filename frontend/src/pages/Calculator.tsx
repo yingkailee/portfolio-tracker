@@ -4,7 +4,7 @@ import type { CalculationResponse, Portfolio, Fund } from '../types';
 import { calculateProjection, fetchPortfolios, fetchFunds, getStoredPortfolios, storePortfolio } from '../api';
 import { calculatePortfolioYield } from '../utils/calculations';
 import Dropdown from '../components/Dropdown';
-import LoginButton from '../components/LoginButton';
+import AuthButton from '../components/AuthButton';
 
 const fmt = (v: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v);
 const USER_ID = 1;
@@ -85,7 +85,7 @@ export default function Calculator() {
         <h1>Calculator</h1>
         <div style={{ display: 'flex', gap: 10 }}>
           <Link to="/portfolio" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>← Portfolio</Link>
-          <LoginButton />
+          <AuthButton />
         </div>
       </div>
 

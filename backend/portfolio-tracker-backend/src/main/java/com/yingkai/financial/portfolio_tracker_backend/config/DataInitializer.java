@@ -36,8 +36,8 @@ public class DataInitializer {
 
             if (userRepository.count() == 0) {
                 User user = new User();
-                user.setUsername("su");
-                user.setPassword(passwordEncoder.encode("gw"));
+                user.setUsername("admin");
+                user.setPassword(passwordEncoder.encode("1234"));
                 user = userRepository.save(user);
 
                 Portfolio portfolio = new Portfolio();
