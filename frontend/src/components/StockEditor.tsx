@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { Fund, Allocations } from '../types';
 
 interface StockEditorProps {
@@ -17,6 +17,17 @@ export default function StockEditor({
   onSelectedTickersChange,
 }: StockEditorProps) {
   const [showPicker, setShowPicker] = useState(false);
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        setShowPicker(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const selectedFunds = funds.filter(f => selectedTickers.includes(f.ticker));
   const availableFunds = funds.filter(f => !selectedTickers.includes(f.ticker));
@@ -73,7 +84,7 @@ export default function StockEditor({
         ))}
       </div>
 
-      <div style={{ marginTop: 10, position: 'relative' }}>
+      <div style={{ marginTop: 10, position: 'relative' }} ref={pickerRef}>
         <button onClick={() => setShowPicker(!showPicker)} className="picker-btn-add">
           + Add Fund
         </button>
