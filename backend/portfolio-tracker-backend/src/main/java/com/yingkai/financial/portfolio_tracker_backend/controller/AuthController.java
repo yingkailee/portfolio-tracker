@@ -1,7 +1,9 @@
 package com.yingkai.financial.portfolio_tracker_backend.controller;
 
 import com.yingkai.financial.portfolio_tracker_backend.dto.RegisterRequest;
+import com.yingkai.financial.portfolio_tracker_backend.entity.Portfolio;
 import com.yingkai.financial.portfolio_tracker_backend.entity.User;
+import com.yingkai.financial.portfolio_tracker_backend.repository.PortfolioRepository;
 import com.yingkai.financial.portfolio_tracker_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import java.util.Map;
 public class AuthController {
 
     private final UserRepository userRepository;
+    private final PortfolioRepository portfolioRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @PostMapping("/register")
@@ -36,7 +39,14 @@ public class AuthController {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        userRepository.save(user);
+        user = userRepository.save(user);
+
+        Portfolio portfolio = new Portfolio();
+        portfolio.setName("My Portfolio");
+        portfolio.setAllocations("{\"VOO\":1}");
+        portfolio.setUser(user);
+        portfolioRepository.save(portfolio);
+
         return ResponseEntity.ok(Map.of("message", "User created", "userId", user.getId()));
     }
 
