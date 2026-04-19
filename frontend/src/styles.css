@@ -2,9 +2,9 @@
   --pink: #ec4899;
   --pink-dark: #db2777;
   --pink-light: #f9a8d4;
-  --black: #1f1f1f;
-  --black-light: #2a2a2a;
-  --black-lighter: #3a3a3a;
+  --black: #2d2d2d;
+  --black-light: #3d3d3d;
+  --black-lighter: #4d4d4d;
   --white: #ffffff;
   --gray: #666666;
 }
@@ -153,6 +153,7 @@ h2, h3 {
 
 .btn:hover {
   background: var(--pink-light);
+  color: var(--black);
 }
 
 .btn:active {
@@ -166,7 +167,7 @@ h2, h3 {
 .btn-red {
   background: transparent;
   border: 1px solid var(--pink);
-  color: var(--pink);
+  color: var(--black);
 }
 
 .btn-red:hover {
