@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { CalculationResponse, Portfolio, Fund } from '../types';
-import { calculateProjection, fetchPortfolios, fetchFunds, getStoredPortfolios, storePortfolio, getUserId } from '../api';
+import { calculateProjection, fetchPortfolios, fetchFunds, getStoredPortfolios, storePortfolio, getUserId, DEFAULT_ALLOCATIONS } from '../api';
 import { calculatePortfolioYield } from '../utils/calculations';
 import Dropdown from '../components/Dropdown';
 import AuthButton from '../components/AuthButton';
@@ -11,8 +11,6 @@ const fmt = (v: number) => new Intl.NumberFormat('en-US', { style: 'currency', c
 function isLoggedIn() {
   return !!localStorage.getItem('token');
 }
-
-const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 0.7, BND: 0.3 });
 
 const Slider = ({ label, value, onChange, min, max, step, format }: {
   label: string; value: number; onChange: (v: number) => void;
@@ -47,7 +45,8 @@ export default function Calculator() {
       } else {
         let stored = getStoredPortfolios();
         if (stored.length === 0) {
-          stored = [defaultPortfolio];
+          const newP = storePortfolio('My Portfolio', DEFAULT_ALLOCATIONS);
+          stored = [newP];
         }
         setPortfolios(stored);
         loadSavedPortfolio(stored, f);

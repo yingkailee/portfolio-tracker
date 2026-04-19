@@ -13,8 +13,6 @@ function isLoggedIn() {
   return !!localStorage.getItem('token');
 }
 
-const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 0.7, BND: 0.3 });
-
 export default function Portfolio() {
   const [funds, setFunds] = useState<Fund[]>([]);
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
@@ -38,7 +36,8 @@ export default function Portfolio() {
       } else {
         let stored = getStoredPortfolios();
         if (stored.length === 0) {
-          stored = [defaultPortfolio];
+          const newP = storePortfolio('My Portfolio', DEFAULT_ALLOCATIONS);
+          stored = [newP];
         }
         setPortfolios(stored);
         loadSavedPortfolio(stored);
