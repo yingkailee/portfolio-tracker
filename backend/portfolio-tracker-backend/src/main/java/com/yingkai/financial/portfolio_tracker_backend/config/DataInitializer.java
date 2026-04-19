@@ -37,18 +37,6 @@ public class DataInitializer {
                 ));
             }
 
-            if (userRepository.count() == 0) {
-                User user = new User();
-                user.setUsername("admin");
-                user.setPassword(passwordEncoder.encode("1234"));
-                user = userRepository.save(user);
-
-                Portfolio portfolio = new Portfolio();
-                portfolio.setName("My Portfolio");
-                portfolio.setAllocations("{\"VOO\":0.7,\"BND\":0.3}");
-                portfolio.setUser(user);
-                portfolioRepository.save(portfolio);
-            }
-        };
+            };
     }
 }
