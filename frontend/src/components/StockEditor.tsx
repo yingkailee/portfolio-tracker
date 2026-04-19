@@ -70,7 +70,6 @@ export default function StockEditor({
                   onClick={() => removeFund(fund.ticker)}
                   disabled={selectedTickers.length === 1}
                   className="alloc-btn-remove"
-                  style={{ background: selectedTickers.length === 1 ? '#ccc' : undefined }}
                 >
                   ×
                 </button>

@@ -12,7 +12,7 @@ export default function AuthButton() {
     return (
       <button
         onClick={() => { logout(); window.location.href = '/portfolio'; }}
-        style={{ padding: '10px 20px', background: '#666', color: 'white', border: 'none', borderRadius: 5, cursor: 'pointer' }}
+        className="btn"
       >
         Logout
       </button>
@@ -21,10 +21,10 @@ export default function AuthButton() {
 
   return (
     <div style={{ display: 'flex', gap: 10 }}>
-      <Link to="/login" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>
+      <Link to="/login" className="btn">
         Login
       </Link>
-      <Link to="/register" style={{ padding: '10px 20px', background: '#16a34a', color: 'white', textDecoration: 'none', borderRadius: 5 }}>
+      <Link to="/register" className="btn">
         Register
       </Link>
     </div>
