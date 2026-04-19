@@ -43,7 +43,7 @@ public class AuthController {
 
         Portfolio portfolio = new Portfolio();
         portfolio.setName("My Portfolio");
-        portfolio.setAllocations("{\"VOO\":1}");
+        portfolio.setAllocations("{\"VOO\":0.7,\"BND\":0.3}");
         portfolio.setUser(user);
         portfolioRepository.save(portfolio);
 
