@@ -13,11 +13,13 @@ function isLoggedIn() {
   return !!localStorage.getItem('token');
 }
 
+const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 0.7, BND: 0.3 });
+
 export default function Portfolio() {
   const [funds, setFunds] = useState<Fund[]>([]);
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
   const [allocations, setAllocations] = useState<Allocations>(DEFAULT_ALLOCATIONS);
-  const [selectedTickers, setSelectedTickers] = useState<string[]>(['VOO']);
+  const [selectedTickers, setSelectedTickers] = useState<string[]>(['VOO', 'BND']);
   const [showPicker, setShowPicker] = useState(false);
   const [name, setName] = useState('');
   const [selectedId, setSelectedId] = useState<number | string | null>(null);
@@ -36,7 +38,6 @@ export default function Portfolio() {
       } else {
         let stored = getStoredPortfolios();
         if (stored.length === 0) {
-const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 0.7, BND: 0.3 });
           stored = [defaultPortfolio];
         }
         setPortfolios(stored);
@@ -156,10 +157,10 @@ const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 0.7, BND: 0.3 });
       }).catch(() => setError('Failed to delete'));
     } else {
       deleteAllStoredPortfolios();
-      const defaultPortfolio = storePortfolio('My Portfolio', DEFAULT_ALLOCATIONS);
-      setPortfolios([defaultPortfolio]);
+      const defaultP = storePortfolio('My Portfolio', DEFAULT_ALLOCATIONS);
+      setPortfolios([defaultP]);
       resetState();
-      loadPortfolio(defaultPortfolio);
+      loadPortfolio(defaultP);
     }
   };
 
@@ -172,18 +173,18 @@ const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 0.7, BND: 0.3 });
   };
 
   return (
-    <div style={{ padding: 20, maxWidth: 1000, margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
+    <div className="container">
+      <div className="flex-between" style={{ marginBottom: 20 }}>
         <h1>Portfolio Allocation</h1>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <Link to="/calculator" style={{ padding: '10px 20px', background: '#2563eb', color: 'white', textDecoration: 'none', borderRadius: 5 }}>Go to Calculator →</Link>
+        <div className="flex-gap">
+          <Link to="/calculator" className="btn">Go to Calculator →</Link>
           <AuthButton />
         </div>
       </div>
 
       {!isLoggedIn() && (
-        <div style={{ background: '#fef3c7', padding: 15, borderRadius: 5, marginBottom: 20 }}>
-          Guest mode: portfolios saved locally. <Link to="/login" style={{ color: '#2563eb' }}>Login</Link> or <Link to="/register" style={{ color: '#16a34a' }}>Register</Link> to save to database.
+        <div className="alert alert-yellow">
+          Guest mode: portfolios saved locally. <Link to="/login" className="link">Login</Link> or <Link to="/register" className="link link-green">Register</Link> to save to database.
         </div>
       )}
 
@@ -199,31 +200,31 @@ const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 0.7, BND: 0.3 });
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: 60, alignItems: 'flex-start' }}>
+      <div className="flex-gap-lg">
         <div style={{ flex: 1 }}>
-          <input placeholder="Portfolio name" value={name} onChange={e => handleNameChange(e.target.value)} style={{ marginBottom: 15, padding: 8, width: '100%' }} />
+          <input placeholder="Portfolio name" value={name} onChange={e => handleNameChange(e.target.value)} className="input" />
 
-          <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+          <div className="alloc-list">
             {selectedFunds.map(fund => (
-              <div key={fund.ticker} style={{ marginBottom: 15, position: 'relative' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+              <div key={fund.ticker} className="alloc-item">
+                <div className="alloc-header">
                   <span>
                     <strong>{fund.ticker}</strong> - {fund.name}
-                    <button onClick={() => removeFund(fund.ticker)} disabled={selectedTickers.length === 1} style={{ marginLeft: 8, padding: '2px 6px', background: selectedTickers.length === 1 ? '#ccc' : '#dc2626', color: 'white', border: 'none', borderRadius: 3, cursor: selectedTickers.length === 1 ? 'not-allowed' : 'pointer' }}>×</button>
+                    <button onClick={() => removeFund(fund.ticker)} disabled={selectedTickers.length === 1} className="alloc-btn-remove" style={{ background: selectedTickers.length === 1 ? '#ccc' : undefined }}>×</button>
                   </span>
                   <span>{Math.round((allocations[fund.ticker] || 0) * 100)}%</span>
                 </div>
-                <input type="range" min={0} max={100} value={Math.round((allocations[fund.ticker] || 0) * 100)} onChange={e => handleAllocationChange(fund.ticker, +e.target.value)} style={{ width: '100%' }} />
+                <input type="range" min={0} max={100} value={Math.round((allocations[fund.ticker] || 0) * 100)} onChange={e => handleAllocationChange(fund.ticker, +e.target.value)} className="range-input" />
               </div>
             ))}
           </div>
 
           <div style={{ marginTop: 10, position: 'relative' }}>
-            <button onClick={() => setShowPicker(!showPicker)} style={{ padding: '8px 16px', background: '#666', color: 'white', border: 'none', borderRadius: 5, cursor: 'pointer' }}>+ Add Fund</button>
+            <button onClick={() => setShowPicker(!showPicker)} className="picker-btn-add">+ Add Fund</button>
             {showPicker && (
-              <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', border: '1px solid #ccc', borderRadius: 5, maxHeight: 200, overflowY: 'auto', zIndex: 100, minWidth: 250, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+              <div className="picker">
                 {availableFunds.map(fund => (
-                  <div key={fund.ticker} onClick={() => addFund(fund.ticker)} style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid #eee' }} onMouseEnter={e => e.currentTarget.style.background = '#f5f5f5'} onMouseLeave={e => e.currentTarget.style.background = 'white'}>
+                  <div key={fund.ticker} onClick={() => addFund(fund.ticker)} className="picker-item">
                     <strong>{fund.ticker}</strong> - {fund.name}
                   </div>
                 ))}
@@ -231,20 +232,22 @@ const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 0.7, BND: 0.3 });
             )}
           </div>
 
-          <button onClick={handleCreate} disabled={!isValid || !name} style={{ marginTop: 20, marginRight: 10, padding: '10px 20px', background: isValid && name ? '#16a34a' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: isValid && name ? 'pointer' : 'not-allowed' }}>
-            {savedMsg === 'Saved!' ? 'Saved!' : 'Save New Portfolio'}
-          </button>
-          <button onClick={handleUpdatePortfolio} disabled={!selectedId || !isValid} style={{ marginTop: 20, marginRight: 10, padding: '10px 20px', background: selectedId && isValid ? '#2563eb' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: selectedId && isValid ? 'pointer' : 'not-allowed' }}>
-            {savedMsg === 'Updated!' ? 'Updated!' : 'Update Portfolio'}
-          </button>
-          <button onClick={handleDeleteAll} disabled={portfolios.length === 0} style={{ marginTop: 20, padding: '10px 20px', background: portfolios.length > 0 ? '#dc2626' : '#ccc', color: 'white', border: 'none', borderRadius: 5, cursor: portfolios.length > 0 ? 'pointer' : 'not-allowed' }}>
-            Delete All
-          </button>
-          {error && <div style={{ color: 'red', marginTop: 10 }}>{error}</div>}
+          <div className="action-row">
+            <button onClick={handleCreate} disabled={!isValid || !name} className="btn btn-green" style={{ background: isValid && name ? '#16a34a' : undefined }}>
+              {savedMsg === 'Saved!' ? 'Saved!' : 'Save New Portfolio'}
+            </button>
+            <button onClick={handleUpdatePortfolio} disabled={!selectedId || !isValid} className="btn" style={{ background: selectedId && isValid ? '#2563eb' : undefined }}>
+              {savedMsg === 'Updated!' ? 'Updated!' : 'Update Portfolio'}
+            </button>
+            <button onClick={handleDeleteAll} disabled={portfolios.length === 0} className="btn btn-red" style={{ background: portfolios.length > 0 ? '#dc2626' : undefined }}>
+              Delete All
+            </button>
+            {error && <div className="action-error">{error}</div>}
+          </div>
         </div>
 
-        <div style={{ width: 350 }}>
-          <h3>Allocation</h3>
+        <div className="chart">
+          <h3 className="section-header">Allocation</h3>
           {pieData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
@@ -254,7 +257,7 @@ const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 0.7, BND: 0.3 });
               </PieChart>
             </ResponsiveContainer>
           ) : <p style={{ textAlign: 'center', color: '#666' }}>No allocation</p>}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 10 }}>
+          <div className="flex-gap" style={{ marginTop: 10 }}>
             {pieData.map((item, i) => (
               <div key={item.name} style={{ color: COLORS[i % COLORS.length] }}>{item.name}: {item.value}%</div>
             ))}
