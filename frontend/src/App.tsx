@@ -1,19 +1,28 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Portfolio from './pages/Portfolio';
-import Calculator from './pages/Calculator';
-import Login from './pages/Login';
-import Register from './pages/Register';
+import './styles.css';
+
+const Portfolio = lazy(() => import('./pages/Portfolio'));
+const Calculator = lazy(() => import('./pages/Calculator'));
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+
+function Loading() {
+  return <div style={{ padding: 20 }}>Loading...</div>;
+}
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to="/portfolio" replace />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/portfolio" element={<Portfolio />} />
-        <Route path="/calculator" element={<Calculator />} />
-      </Routes>
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/portfolio" replace />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/calculator" element={<Calculator />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }
