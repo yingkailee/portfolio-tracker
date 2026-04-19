@@ -156,8 +156,10 @@ export default function Portfolio() {
       }).catch(() => setError('Failed to delete'));
     } else {
       deleteAllStoredPortfolios();
-      setPortfolios([]);
+      const defaultPortfolio = storePortfolio('My Portfolio', { VOO: 1 });
+      setPortfolios([defaultPortfolio]);
       resetState();
+      loadPortfolio(defaultPortfolio);
     }
   };
 
