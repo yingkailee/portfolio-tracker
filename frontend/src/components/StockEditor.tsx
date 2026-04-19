@@ -70,7 +70,18 @@ export default function StockEditor({
                   ×
                 </button>
               </span>
-              <span>{Math.round((allocations[fund.ticker] || 0) * 100)}%</span>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={Math.round((allocations[fund.ticker] || 0) * 100)}
+                onChange={e => {
+                  const val = Math.max(0, Math.min(100, parseInt(e.target.value) || 0));
+                  handleAllocationChange(fund.ticker, val);
+                }}
+                style={{ width: 50, textAlign: 'right' }}
+              />
+              <span>%</span>
             </div>
             <input
               type="range"
