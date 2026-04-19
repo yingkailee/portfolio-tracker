@@ -2,13 +2,12 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import type { Fund, Allocations, Portfolio } from '../types';
-import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, deleteAllPortfolios, getStoredPortfolios, storePortfolio, deleteAllStoredPortfolios } from '../api';
+import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, deleteAllPortfolios, getStoredPortfolios, storePortfolio, deleteAllStoredPortfolios, getUserId } from '../api';
 import AuthButton from '../components/AuthButton';
 import { calculatePortfolioYield, validateAllocations } from '../utils/calculations';
 import Dropdown from '../components/Dropdown';
 
 const COLORS = ['#2563eb', '#dc2626', '#16a34a', '#9333ea', '#ea580c', '#0891b2'];
-const USER_ID = 1;
 
 function isLoggedIn() {
   return !!localStorage.getItem('credentials');
@@ -30,7 +29,7 @@ export default function Portfolio() {
     Promise.all([fetchFunds()]).then(([f]) => {
       setFunds(f);
       if (loggedIn) {
-        fetchPortfolios(USER_ID).then(p => {
+        fetchPortfolios(getUserId()!).then(p => {
           setPortfolios(p);
           loadSavedPortfolio(p);
         });
@@ -115,10 +114,10 @@ export default function Portfolio() {
     if (portfolios.some(p => p.name === name)) { setError('A portfolio with this name already exists'); return; }
     const loggedIn = isLoggedIn();
     if (loggedIn) {
-      createPortfolio(name, allocations, USER_ID).then(newPortfolio => {
+      createPortfolio(name, allocations, getUserId()!).then(newPortfolio => {
         setSavedMsg('Saved!');
         setError('');
-        fetchPortfolios(USER_ID).then(p => { setPortfolios(p); setSelectedId(Number(newPortfolio.id)); });
+        fetchPortfolios(getUserId()!).then(p => { setPortfolios(p); setSelectedId(Number(newPortfolio.id)); });
       }).catch(() => setError('Failed to save'));
     } else {
       const newPortfolio = storePortfolio(name, allocations);
@@ -137,7 +136,7 @@ export default function Portfolio() {
       savePortfolio(selectedId as number, name, allocations).then(() => {
         setSavedMsg('Updated!');
         setError('');
-        fetchPortfolios(USER_ID).then(p => setPortfolios(p));
+        fetchPortfolios(getUserId()!).then(p => setPortfolios(p));
       }).catch(() => setError('Failed to update'));
     } else {
       storePortfolio(name, allocations, selectedId);
@@ -152,8 +151,8 @@ export default function Portfolio() {
     if (!confirmed) return;
     const loggedIn = isLoggedIn();
     if (loggedIn) {
-      deleteAllPortfolios(USER_ID).then(() => {
-        fetchPortfolios(USER_ID).then(p => { setPortfolios(p); resetState(); });
+      deleteAllPortfolios(getUserId()!).then(() => {
+        fetchPortfolios(getUserId()!).then(p => { setPortfolios(p); resetState(); });
       }).catch(() => setError('Failed to delete'));
     } else {
       deleteAllStoredPortfolios();

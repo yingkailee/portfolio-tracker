@@ -39,4 +39,19 @@ public class AuthController {
         userRepository.save(user);
         return ResponseEntity.ok(Map.of("message", "User created", "userId", user.getId()));
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String auth) {
+        if (auth == null || !auth.startsWith("Basic ")) {
+            return ResponseEntity.status(401).build();
+        }
+        String encoded = auth.substring(6);
+        String decoded = new String(java.util.Base64.getDecoder().decode(encoded));
+        String username = decoded.split(":")[0];
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.ok(Map.of("userId", user.getId(), "username", user.getUsername()));
+    }
 }

@@ -7,6 +7,15 @@ function getAuthHeader(): string {
   return creds ? `Basic ${creds}` : '';
 }
 
+export function getUserId(): number | null {
+  const id = localStorage.getItem('userId');
+  return id ? parseInt(id) : null;
+}
+
+export function setUserId(id: number): void {
+  localStorage.setItem('userId', id.toString());
+}
+
 export async function fetchFunds(): Promise<Fund[]> {
   const res = await fetch(`${API_BASE}/funds`, {
     headers: { 'Authorization': getAuthHeader() },

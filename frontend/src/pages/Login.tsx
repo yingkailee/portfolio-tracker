@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import AuthForm from '../components/AuthForm';
+import { setUserId } from '../api';
 
 export default function Login() {
   const [error, setError] = useState('');
@@ -21,13 +22,15 @@ export default function Login() {
 
     try {
       const credentials = btoa(`${username}:${password}`);
-      const res = await fetch('http://localhost:8080/api/funds', {
+
+      const res = await fetch('http://localhost:8080/api/me', {
         headers: { 'Authorization': `Basic ${credentials}` },
-        cache: 'no-store',
       });
 
       if (res.ok) {
         localStorage.setItem('credentials', credentials);
+        const data = await res.json();
+        setUserId(data.userId);
         window.location.href = '/portfolio';
       } else {
         setError('Invalid username or password');
