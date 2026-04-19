@@ -6,7 +6,7 @@ import { calculatePortfolioYield } from '../utils/calculations';
 import Dropdown from '../components/Dropdown';
 import AuthButton from '../components/AuthButton';
 
-const fmt = (v: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v).replace('$', '$ ');
+const fmt = (v: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v);
 
 function isLoggedIn() {
   return !!localStorage.getItem('token');
@@ -122,7 +122,7 @@ export default function Calculator() {
             <span style={{ color: '#2563eb' }}>{fmt(result.totalGrowth)}</span>
           </div>
           <div className="result-total">
-            <span className="result-label">Final Net Worth:</span>
+            <span className="result-label">Final Net Worth: </span>
             <strong style={{ color: '#16a34a', fontSize: '24px' }}>{fmt(result.finalNetWorth)}</strong>
           </div>
         </div>
