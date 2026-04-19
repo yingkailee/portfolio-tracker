@@ -2,7 +2,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import type { Fund, Allocations } from '../types';
 import { calculatePortfolioYield } from '../utils/calculations';
 
-const COLORS = ['#2563eb', '#dc2626', '#16a34a', '#9333ea', '#ea580c', '#0891b2'];
+const COLORS = ['#ec4899', '#f9a8d4', '#db2777', '#be185d', '#9d174d', '#831843'];
 
 interface AllocationChartProps {
   funds: Fund[];
@@ -32,6 +32,7 @@ export default function AllocationChart({ funds, allocations }: AllocationChartP
           </PieChart>
         </ResponsiveContainer>
       ) : <p style={{ textAlign: 'center', color: '#666' }}>No allocation</p>}
+      <p style={{ textAlign: 'center', marginTop: 10, color: '#f9a8d4' }}>Yield: <strong style={{ color: '#ec4899' }}>{portfolioYield.toFixed(2)}%</strong></p>
       <div className="flex-gap" style={{ marginTop: 10 }}>
         {pieData.map((item, i) => (
           <div key={item.name} style={{ color: COLORS[i % COLORS.length] }}>{item.name}: {item.value}%</div>

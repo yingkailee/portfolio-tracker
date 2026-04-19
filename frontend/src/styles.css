@@ -1,3 +1,25 @@
+:root {
+  --pink: #ec4899;
+  --pink-dark: #db2777;
+  --pink-light: #f9a8d4;
+  --black: #0a0a0a;
+  --black-light: #1a1a1a;
+  --black-lighter: #2a2a2a;
+  --white: #ffffff;
+  --gray: #666666;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+}
+
 /* Layout */
 .container {
   padding: 20px;
@@ -31,9 +53,10 @@
 /* Typography */
 h1 {
   font-size: 24px;
+  color: var(--pink);
 }
 
-h3 {
+h2, h3 {
   font-size: 18px;
 }
 
@@ -43,14 +66,14 @@ h3 {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #f3f4f6;
+  background: var(--black);
 }
 
 .auth-card {
-  background: white;
+  background: var(--black-light);
   padding: 40px;
   border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--pink);
   width: 350px;
 }
 
@@ -58,62 +81,78 @@ h3 {
   text-align: center;
   margin-bottom: 30px;
   font-size: 24px;
+  color: var(--pink);
 }
 
 .auth-input {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--pink);
   border-radius: 5px;
   font-size: 16px;
   margin-bottom: 20px;
+  background: var(--black);
+  color: var(--white);
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: var(--pink-light);
 }
 
 .auth-label {
   display: block;
   margin-bottom: 5px;
+  color: var(--pink-light);
 }
 
 .auth-error {
-  color: red;
+  color: var(--pink);
   margin-bottom: 15px;
 }
 
 .auth-submit {
   width: 100%;
   padding: 12px;
-  background: #2563eb;
-  color: white;
+  background: var(--pink);
+  color: var(--black);
   border: none;
   border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
+  font-weight: bold;
+}
+
+.auth-submit:hover {
+  background: var(--pink-light);
 }
 
 .auth-submit:disabled {
-  background: #ccc;
+  background: var(--gray);
   cursor: not-allowed;
 }
 
 .auth-link {
   margin-top: 20px;
   text-align: center;
+  color: var(--gray);
 }
 
 /* Buttons */
 .btn {
   padding: 10px 20px;
-  background: #2563eb;
-  color: white;
+  background: var(--pink);
+  color: var(--black);
   text-decoration: none;
   border-radius: 5px;
   border: none;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.2s;
+  font-weight: bold;
 }
 
 .btn:hover {
-  opacity: 0.9;
+  background: var(--pink-light);
 }
 
 .btn:active {
@@ -121,24 +160,29 @@ h3 {
 }
 
 .btn-green {
-  background: #16a34a;
+  background: var(--pink);
 }
 
 .btn-red {
-  background: #dc2626;
+  background: transparent;
+  border: 1px solid var(--pink);
+  color: var(--pink);
 }
 
 .btn-red:hover {
-  background: #b91c1c;
+  background: var(--pink);
+  color: var(--black);
 }
 
 .btn-gray {
-  background: #666;
+  background: var(--gray);
 }
 
 .btn:disabled {
-  background: #ccc;
+  background: var(--black-lighter);
+  color: var(--gray);
   cursor: not-allowed;
+  border: 1px solid var(--gray);
 }
 
 /* Form Elements */
@@ -146,24 +190,38 @@ h3 {
   margin-bottom: 15px;
   padding: 8px;
   width: 100%;
+  background: var(--black);
+  color: var(--white);
+  border: 1px solid var(--pink);
+  border-radius: 5px;
 }
 
 .input-sm {
   margin-bottom: 8px;
   padding: 4px 8px;
   width: 100%;
+  background: var(--black);
+  color: var(--white);
+  border: 1px solid var(--pink);
+  border-radius: 5px;
 }
 
 /* Labels */
 label {
   display: block;
   margin-bottom: 5px;
+  color: var(--pink-light);
 }
 
 .label-inline {
   display: flex;
   justify-content: space-between;
   margin-bottom: 5px;
+}
+
+.label-block {
+  display: block;
+  color: var(--pink-light);
 }
 
 /* Slider */
@@ -178,6 +236,7 @@ label {
 /* Ranges */
 .range-input {
   width: 100%;
+  accent-color: var(--pink);
 }
 
 /* Alerts */
@@ -188,22 +247,24 @@ label {
 }
 
 .alert-yellow {
-  background: #fef3c7;
+  background: var(--black-lighter);
+  border: 1px solid var(--pink);
 }
 
 .alert-result {
-  background: #f3f4f6;
+  background: var(--black-light);
   padding: 20px;
   border-radius: 10px;
   margin-top: 20px;
+  border: 1px solid var(--pink);
 }
 
 /* Card */
 .card {
-  background: white;
+  background: var(--black-light);
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--pink);
 }
 
 /* Results Display */
@@ -211,27 +272,30 @@ label {
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
+  color: var(--pink-light);
 }
 
 .result-row-lg {
   display: flex;
   justify-content: space-between;
   margin-bottom: 15px;
+  color: var(--pink-light);
 }
 
 .result-total {
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--pink);
   padding-top: 15px;
 }
 
 .result-total strong {
   font-size: 24px;
-  color: #16a34a;
+  color: var(--pink);
 }
 
 .result-label {
   font-size: 18px;
   font-weight: 600;
+  color: var(--pink-light);
 }
 
 /* Allocation List */
@@ -254,15 +318,21 @@ label {
 .alloc-btn-remove {
   margin-left: 8px;
   padding: 2px 6px;
-  background: #dc2626;
-  color: white;
-  border: none;
+  background: transparent;
+  color: var(--pink);
+  border: 1px solid var(--pink);
   border-radius: 3px;
   cursor: pointer;
 }
 
+.alloc-btn-remove:hover {
+  background: var(--pink);
+  color: var(--black);
+}
+
 .alloc-btn-remove:disabled {
-  background: #ccc;
+  color: var(--gray);
+  border-color: var(--gray);
   cursor: not-allowed;
 }
 
@@ -271,33 +341,39 @@ label {
   position: absolute;
   top: 100%;
   left: 0;
-  background: white;
-  border: 1px solid #ccc;
+  background: var(--black-light);
+  border: 1px solid var(--pink);
   border-radius: 5px;
   max-height: 200px;
   overflow-y: auto;
   z-index: 100;
   min-width: 250px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .picker-item {
   padding: 8px 12px;
   cursor: pointer;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--black-lighter);
+  color: var(--white);
 }
 
 .picker-item:hover {
-  background: #f5f5f5;
+  background: var(--pink);
+  color: var(--black);
 }
 
 .picker-btn-add {
   padding: 8px 16px;
-  background: #666;
-  color: white;
-  border: none;
+  background: transparent;
+  color: var(--pink);
+  border: 1px solid var(--pink);
   border-radius: 5px;
   cursor: pointer;
+}
+
+.picker-btn-add:hover {
+  background: var(--pink);
+  color: var(--black);
 }
 
 /* Actions */
@@ -314,7 +390,7 @@ label {
 }
 
 .action-error {
-  color: red;
+  color: var(--pink);
   margin-top: 10px;
 }
 
@@ -327,34 +403,37 @@ label {
 .dropdown-selected {
   cursor: pointer;
   padding: 8px 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--pink);
   border-radius: 5px;
   min-width: 150px;
-  background: white;
+  background: var(--black);
+  color: var(--white);
 }
 
 .dropdown-list {
   position: absolute;
   top: 100%;
   left: 0;
-  background: white;
-  border: 1px solid #ccc;
+  background: var(--black-light);
+  border: 1px solid var(--pink);
   border-radius: 5px;
   min-width: 200px;
   max-height: 200px;
   overflow-y: auto;
   z-index: 100;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .dropdown-item {
   padding: 8px 12px;
   cursor: pointer;
+  color: var(--white);
+  border-bottom: 1px solid var(--black-lighter);
 }
 
 .dropdown-item.selected,
 .dropdown-item:hover {
-  background: #e5e7eb;
+  background: var(--pink);
+  color: var(--black);
 }
 
 /* Chart */
@@ -370,16 +449,44 @@ label {
 /* Section Headers */
 .section-header {
   margin-bottom: 15px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--pink);
   padding-bottom: 10px;
+  color: var(--pink);
 }
 
 /* Links */
 .link {
-  color: #2563eb;
+  color: var(--pink);
   text-decoration: none;
 }
 
+.link:hover {
+  text-decoration: underline;
+}
+
 .link-green {
-  color: #16a34a;
+  color: var(--pink-light);
+}
+
+/* Allocation Total */
+.alloc-total {
+  padding: 8px 12px;
+  background: var(--black-light);
+  border: 1px solid var(--pink);
+  border-radius: 5px;
+}
+
+/* Auth Button */
+.auth-btn {
+  padding: 8px 16px;
+  background: transparent;
+  color: var(--pink);
+  border: 1px solid var(--pink);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.auth-btn:hover {
+  background: var(--pink);
+  color: var(--black);
 }
