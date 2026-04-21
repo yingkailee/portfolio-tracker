@@ -157,7 +157,7 @@ public class YahooFinanceService {
         double cagr10yr = calculateCAGR(monthlyData, 10);
         double cagr5yr = calculateCAGR(monthlyData, 5);
 
-        Timestamp now = Timestamp.from(Instant.now());
+        Timestamp nowTimestamp = Timestamp.from(Instant.now());
         Timestamp expiresAt = Timestamp.from(Instant.now().plusSeconds(EXPIRY_DAYS * 24L * 60L * 60L));
 
         FundPerformance perf = new FundPerformance();
@@ -167,7 +167,7 @@ public class YahooFinanceService {
         perf.setCagr15yr(cagr15yr);
         perf.setDataStartDate(startDate);
         perf.setDataEndDate(endDate);
-        perf.setCalculatedAt(now);
+        perf.setCalculatedAt(nowTimestamp);
         perf.setExpiresAt(expiresAt);
 
         return perf;
