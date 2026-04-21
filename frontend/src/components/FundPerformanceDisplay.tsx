@@ -1,39 +1,66 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { fetchFunds, fetchFundPerformance } from '../api';
 import type { Fund, FundPerformance } from '../types';
 
+const STORAGE_KEY = 'selectedFundTicker';
+
 export default function FundPerformanceDisplay() {
   const [funds, setFunds] = useState<Fund[]>([]);
-  const [selectedTicker, setSelectedTicker] = useState<string>('Select a fund');
+  const [selectedTicker, setSelectedTicker] = useState<string>('');
   const [performance, setPerformance] = useState<FundPerformance | null>(null);
   const [loading, setLoading] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
   const loadFunds = async () => {
     const f = await fetchFunds();
     setFunds(f);
+    
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved && f.some(fund => fund.ticker === saved)) {
+      setSelectedTicker(saved);
+    } else {
+      setSelectedTicker('');
+    }
+    setInitialized(true);
   };
 
   const loadPerformance = async (ticker: string) => {
     setSelectedTicker(ticker);
-    setLoading(true);
-    setPerformance(null);
-    try {
-      const p = await fetchFundPerformance(ticker);
-      setPerformance(p);
-    } catch {
+    if (ticker) {
+      localStorage.setItem(STORAGE_KEY, ticker);
+      setLoading(true);
+      setPerformance(null);
+      try {
+        const p = await fetchFundPerformance(ticker);
+        setPerformance(p);
+      } catch {
+        setPerformance(null);
+      }
+      setLoading(false);
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
       setPerformance(null);
     }
-    setLoading(false);
   };
 
-  if (funds.length === 0) {
+  useEffect(() => {
     loadFunds();
-  }
+  }, []);
+
+  useEffect(() => {
+    if (initialized && selectedTicker) {
+      loadPerformance(selectedTicker);
+    }
+  }, [selectedTicker]);
 
   const formatPercent = (value: number | null) => {
     if (value === null) return '--';
     return (value * 100).toFixed(2) + '%';
   };
+
+  if (!initialized) {
+    return <div className="card" style={{ marginTop: 20 }}>Loading...</div>;
+  }
 
   return (
     <div className="card" style={{ marginTop: 20 }}>
@@ -73,8 +100,10 @@ export default function FundPerformanceDisplay() {
             Data: {performance.dataStartDate} to {performance.dataEndDate}
           </div>
         </div>
-      ) : (
+      ) : selectedTicker ? (
         <p>No performance data available for {selectedTicker}</p>
+      ) : (
+        <p>Select a fund to view performance</p>
       )}
     </div>
   );
