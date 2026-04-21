@@ -2,8 +2,7 @@ package com.yingkai.financial.portfolio_tracker_backend.service;
 
 import com.yingkai.financial.portfolio_tracker_backend.entity.FundPerformance;
 import com.yingkai.financial.portfolio_tracker_backend.repository.FundPerformanceRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -14,14 +13,17 @@ import java.time.ZoneId;
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class YahooFinanceService {
 
     private static final String YAHOO_URL = "https://query1.finance.yahoo.com/v8/finance/chart/%s?range=15y&interval=1mo";
     private static final int EXPIRY_DAYS = 30;
-
+    
     private final FundPerformanceRepository fundPerformanceRepository;
+    
+    @Autowired
+    public YahooFinanceService(FundPerformanceRepository fundPerformanceRepository) {
+        this.fundPerformanceRepository = fundPerformanceRepository;
+    }
 
     public FundPerformance getOrFetchCAGR(String ticker) {
         Timestamp now = Timestamp.from(Instant.now());
@@ -120,7 +122,7 @@ public class YahooFinanceService {
             return fundPerformanceRepository.save(performance);
 
         } catch (Exception e) {
-            log.error("Failed to fetch CAGR for {}: {}", ticker, e.getMessage());
+            System.err.println("Failed to fetch CAGR for " + ticker + ": " + e.getMessage());
             throw new RuntimeException("Failed to fetch data: " + e.getMessage());
         }
     }

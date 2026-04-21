@@ -2,17 +2,21 @@ package com.yingkai.financial.portfolio_tracker_backend.controller;
 
 import com.yingkai.financial.portfolio_tracker_backend.entity.FundPerformance;
 import com.yingkai.financial.portfolio_tracker_backend.service.YahooFinanceService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/fund-performance")
-@RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class FundPerformanceController {
 
     private final YahooFinanceService yahooFinanceService;
+
+    @Autowired
+    public FundPerformanceController(YahooFinanceService yahooFinanceService) {
+        this.yahooFinanceService = yahooFinanceService;
+    }
 
     @GetMapping("/{ticker}")
     public ResponseEntity<FundPerformance> getCAGR(@PathVariable String ticker) {
