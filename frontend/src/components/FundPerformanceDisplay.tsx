@@ -46,6 +46,7 @@ export default function FundPerformanceDisplay() {
           className="input"
           style={{ width: 'auto' }}
         >
+          <option value="">-- Select a fund --</option>
           {funds.map(f => (
             <option key={f.ticker} value={f.ticker}>{f.ticker} - {f.name}</option>
           ))}
