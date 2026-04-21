@@ -60,6 +60,11 @@ public class YahooFinanceService {
                 }
                 
                 FundPerformance perf = processYahooResponse(ticker, responseBody);
+                
+                var existing = fundPerformanceRepository.findByTicker(ticker);
+                if (existing.isPresent()) {
+                    perf.setId(existing.get().getId());
+                }
                 return fundPerformanceRepository.save(perf);
                 
             } catch (Exception e) {
