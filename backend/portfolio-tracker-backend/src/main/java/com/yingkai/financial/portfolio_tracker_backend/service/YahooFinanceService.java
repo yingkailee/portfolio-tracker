@@ -57,19 +57,21 @@ public class YahooFinanceService {
             }
 
             Map quote = resultList.get(0);
+            
+            List<Long> timestamps = (List) quote.get("timestamp");
+            
             Map indicators = (Map) quote.get("indicators");
             if (indicators == null) {
                 throw new RuntimeException("No indicators");
             }
 
-            List<Map> quoteList = (List) indicators.get("quote");
-            if (quoteList == null || quoteList.isEmpty()) {
-                throw new RuntimeException("No quote data");
+            List<Map> adjcloseList = (List) indicators.get("adjclose");
+            if (adjcloseList == null || adjcloseList.isEmpty()) {
+                throw new RuntimeException("No adjclose data");
             }
 
-            Map quoteData = quoteList.get(0);
-            List<Long> timestamps = (List) quoteData.get("timestamp");
-            List<Double> adjustedClose = (List) quoteData.get("adjclose");
+            Map adjcloseData = adjcloseList.get(0);
+            List<Double> adjustedClose = (List) adjcloseData.get("adjclose");
 
             if (timestamps == null || adjustedClose == null) {
                 throw new RuntimeException("Missing timestamp or adjclose data");
@@ -78,7 +80,7 @@ public class YahooFinanceService {
             List<Map.Entry<LocalDate, Double>> monthlyData = new ArrayList<>();
             for (int i = 0; i < timestamps.size(); i++) {
                 Long ts = timestamps.get(i);
-                Double close = adjustedClose.get(i);
+                Double close = i < adjustedClose.size() ? adjustedClose.get(i) : null;
                 if (ts != null && close != null) {
                     LocalDate date = Instant.ofEpochMilli(ts * 1000)
                             .atZone(ZoneId.of("America/New_York"))
