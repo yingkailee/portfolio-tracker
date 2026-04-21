@@ -4,21 +4,19 @@ import type { Fund, FundPerformance } from '../types';
 
 export default function FundPerformanceDisplay() {
   const [funds, setFunds] = useState<Fund[]>([]);
-  const [selectedTicker, setSelectedTicker] = useState<string>('');
+  const [selectedTicker, setSelectedTicker] = useState<string>('Select a fund');
   const [performance, setPerformance] = useState<FundPerformance | null>(null);
   const [loading, setLoading] = useState(false);
 
   const loadFunds = async () => {
     const f = await fetchFunds();
     setFunds(f);
-    if (f.length > 0 && !selectedTicker) {
-      loadPerformance(f[0].ticker);
-    }
   };
 
   const loadPerformance = async (ticker: string) => {
     setSelectedTicker(ticker);
     setLoading(true);
+    setPerformance(null);
     try {
       const p = await fetchFundPerformance(ticker);
       setPerformance(p);

@@ -84,7 +84,14 @@ public class YahooFinanceService {
         }
 
         Map quote = results.get(0);
-        List<Long> timestamps = (List<Long>) quote.get("timestamp");
+        
+        List timestampsRaw = (List) quote.get("timestamp");
+        List<Long> timestamps = new ArrayList<>();
+        for (Object ts : timestampsRaw) {
+            if (ts instanceof Number) {
+                timestamps.add(((Number) ts).longValue());
+            }
+        }
         
         Map indicators = (Map) quote.get("indicators");
         if (indicators == null) {
@@ -97,7 +104,14 @@ public class YahooFinanceService {
         }
 
         Map adjcloseData = adjcloseList.get(0);
-        List<Double> adjustedClose = (List<Double>) adjcloseData.get("adjclose");
+        
+        List closeRaw = (List) adjcloseData.get("adjclose");
+        List<Double> adjustedClose = new ArrayList<>();
+        for (Object c : closeRaw) {
+            if (c instanceof Number) {
+                adjustedClose.add(((Number) c).doubleValue());
+            }
+        }
 
         if (timestamps == null || adjustedClose == null) {
             throw new RuntimeException("Missing timestamp or adjclose data");
