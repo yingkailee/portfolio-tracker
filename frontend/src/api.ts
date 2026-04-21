@@ -39,6 +39,15 @@ export async function fetchFundPerformance(ticker: string): Promise<FundPerforma
   return res.json();
 }
 
+export async function refreshFundPerformance(ticker: string): Promise<FundPerformance | null> {
+  const res = await fetch(`${API_BASE}/fund-performance/${ticker}/refresh`, {
+    method: 'POST',
+    headers: { 'Authorization': getAuthHeader() },
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
 export async function fetchPortfolios(userId: number): Promise<Portfolio[]> {
   const res = await fetch(`${API_BASE}/portfolios?userId=${userId}`, {
     headers: { 'Authorization': getAuthHeader() },

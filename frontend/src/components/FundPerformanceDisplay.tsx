@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchFunds, fetchFundPerformance } from '../api';
+import { fetchFunds, fetchFundPerformance, refreshFundPerformance } from '../api';
 import type { Fund, FundPerformance } from '../types';
 
 const STORAGE_KEY = 'selectedFundTicker';
@@ -43,6 +43,17 @@ export default function FundPerformanceDisplay() {
     }
   };
 
+  const refreshPerformance = async (ticker: string) => {
+    setLoading(true);
+    try {
+      const p = await refreshFundPerformance(ticker);
+      setPerformance(p);
+    } catch {
+      // keep existing
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
     loadFunds();
   }, []);
@@ -65,7 +76,7 @@ export default function FundPerformanceDisplay() {
   return (
     <div className="card" style={{ marginTop: 20 }}>
       <h3 className="section-header">Fund Performance Lookup</h3>
-      <div style={{ marginBottom: 15 }}>
+      <div style={{ marginBottom: 15, display: 'flex', gap: 10, alignItems: 'center' }}>
         <label>Ticker: </label>
         <select
           value={selectedTicker}
@@ -78,6 +89,15 @@ export default function FundPerformanceDisplay() {
             <option key={f.ticker} value={f.ticker}>{f.ticker} - {f.name}</option>
           ))}
         </select>
+        {performance && (
+          <button
+            onClick={() => refreshPerformance(selectedTicker)}
+            className="btn"
+            style={{ padding: '5px 10px', fontSize: '12px' }}
+          >
+            Refresh
+          </button>
+        )}
       </div>
       
       {loading ? (
