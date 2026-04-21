@@ -5,6 +5,7 @@ import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, deleteAllP
 import AuthButton from '../components/AuthButton';
 import AllocationEditor from '../components/AllocationEditor';
 import AllocationChart from '../components/AllocationChart';
+import FundPerformanceDisplay from '../components/FundPerformanceDisplay';
 
 function isLoggedIn() {
   return !!localStorage.getItem('token');
@@ -155,6 +156,7 @@ export default function Portfolio() {
         />
         <AllocationChart funds={funds} allocations={allocations} />
       </div>
+      <FundPerformanceDisplay />
     </div>
   );
 }

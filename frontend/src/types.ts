@@ -33,3 +33,15 @@ export interface Portfolio {
   user?: { id: number; name: string };
   userId?: number;
 }
+
+export interface FundPerformance {
+  id: number;
+  ticker: string;
+  cagr5yr: number;
+  cagr10yr: number;
+  cagr15yr: number;
+  dataStartDate: string;
+  dataEndDate: string;
+  calculatedAt: string;
+  expiresAt: string;
+}

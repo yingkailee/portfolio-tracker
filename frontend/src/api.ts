@@ -1,4 +1,4 @@
-import type { Fund, Allocations, CalculationResponse, Portfolio } from './types';
+import type { Fund, Allocations, CalculationResponse, Portfolio, FundPerformance } from './types';
 
 const API_BASE = 'http://localhost:8080/api';
 
@@ -28,6 +28,14 @@ export async function fetchFunds(): Promise<Fund[]> {
   const res = await fetch(`${API_BASE}/funds`, {
     headers: { 'Authorization': getAuthHeader() },
   });
+  return res.json();
+}
+
+export async function fetchFundPerformance(ticker: string): Promise<FundPerformance | null> {
+  const res = await fetch(`${API_BASE}/fund-performance/${ticker}`, {
+    headers: { 'Authorization': getAuthHeader() },
+  });
+  if (!res.ok) return null;
   return res.json();
 }
 
