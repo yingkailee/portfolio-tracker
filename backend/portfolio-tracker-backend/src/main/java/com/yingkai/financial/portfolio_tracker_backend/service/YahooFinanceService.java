@@ -135,6 +135,18 @@ public class YahooFinanceService {
 
         monthlyData.sort(Comparator.comparing(Map.Entry::getKey));
 
+        LocalDate now = LocalDate.now();
+        if (!monthlyData.isEmpty()) {
+            LocalDate lastDate = monthlyData.get(monthlyData.size() - 1).getKey();
+            if (lastDate.getYear() == now.getYear() && lastDate.getMonthValue() == now.getMonthValue()) {
+                monthlyData.remove(monthlyData.size() - 1);
+            }
+        }
+
+        if (monthlyData.isEmpty()) {
+            throw new RuntimeException("No complete monthly data points");
+        }
+
         LocalDate startDate = monthlyData.get(0).getKey();
         LocalDate endDate = monthlyData.get(monthlyData.size() - 1).getKey();
         double startPrice = monthlyData.get(0).getValue();
