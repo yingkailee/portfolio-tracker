@@ -136,9 +136,10 @@ public class YahooFinanceService {
         monthlyData.sort(Comparator.comparing(Map.Entry::getKey));
 
         LocalDate now = LocalDate.now();
+        LocalDate firstOfMonth = now.withDayOfMonth(1);
         if (!monthlyData.isEmpty()) {
             LocalDate lastDate = monthlyData.get(monthlyData.size() - 1).getKey();
-            if (lastDate.getYear() == now.getYear() && lastDate.getMonthValue() == now.getMonthValue()) {
+            if (lastDate.getYear() == now.getYear() && lastDate.getMonthValue() == now.getMonthValue() && lastDate.isAfter(firstOfMonth)) {
                 monthlyData.remove(monthlyData.size() - 1);
             }
         }
