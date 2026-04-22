@@ -109,7 +109,7 @@ export default function Calculator() {
   }, [capital, savings, years, yield_]);
 
   return (
-    <div className="container-narrow">
+    <div className="container">
       <div className="flex-between" style={{ marginBottom: 20 }}>
         <h1>Calculator</h1>
         <div className="flex-gap">
