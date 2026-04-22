@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, Line } from 'recharts';
 import type { CalculationResponse, Portfolio } from '../types';
 import { calculateProjection, fetchPortfolios, getStoredPortfolios, storePortfolio, getUserId, DEFAULT_ALLOCATIONS } from '../api';
 import { calculatePortfolioYield, type CagrPeriod } from '../utils/calculations';
@@ -7,6 +8,11 @@ import Dropdown from '../components/Dropdown';
 import AuthButton from '../components/AuthButton';
 
 const fmt = (v: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v);
+const fmtCompact = (v: number) => {
+  if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
+  if (v >= 1000) return `$${(v / 1000).toFixed(0)}K`;
+  return `$${v}`;
+};
 
 function isLoggedIn() {
   return !!localStorage.getItem('token');
@@ -33,6 +39,25 @@ export default function Calculator() {
   const [cagrPeriod, setCagrPeriod] = useState<CagrPeriod>(15);
   const [result, setResult] = useState<CalculationResponse | null>(null);
   const [yieldLoading, setYieldLoading] = useState(false);
+
+  const growthData = useMemo(() => {
+    if (!result) return [];
+    const data = [];
+    let netWorth = capital;
+    const yearlySavingsAmount = savings;
+    const rate = yield_ / 100;
+
+    for (let year = 0; year <= years; year++) {
+      data.push({
+        year,
+        netWorth: Math.round(netWorth),
+        contributions: Math.round(capital + yearlySavingsAmount * year),
+        growth: Math.round(netWorth - capital - yearlySavingsAmount * year),
+      });
+      netWorth = netWorth * (1 + rate) + yearlySavingsAmount;
+    }
+    return data;
+  }, [capital, savings, years, yield_, result]);
 
   useEffect(() => {
     const loggedIn = isLoggedIn();
@@ -146,6 +171,52 @@ export default function Calculator() {
             <span className="result-label">Final Net Worth: </span>
             <strong style={{ color: '#16a34a', fontSize: '24px' }}>{fmt(result.finalNetWorth)}</strong>
           </div>
+
+          {growthData.length > 0 && (
+            <div style={{ marginTop: 30 }}>
+              <h3 className="section-header">Growth Over Time</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={growthData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorNetWorth" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#16a34a" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#16a34a" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                  <XAxis 
+                    dataKey="year" 
+                    tickFormatter={(v) => `Year ${v}`}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis 
+                    tickFormatter={fmtCompact}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <Tooltip 
+                    formatter={(value) => fmt(value as number)}
+                    labelFormatter={(label) => `Year ${label}`}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="netWorth" 
+                    stroke="#16a34a" 
+                    fillOpacity={1} 
+                    fill="url(#colorNetWorth)" 
+                    name="Net Worth"
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="contributions" 
+                    stroke="#2563eb" 
+                    strokeDasharray="5 5" 
+                    dot={false}
+                    name="Contributions"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </div>
       )}
     </div>
