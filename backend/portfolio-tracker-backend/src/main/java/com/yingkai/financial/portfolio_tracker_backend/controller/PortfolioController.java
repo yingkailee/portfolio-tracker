@@ -9,9 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -32,18 +30,4 @@ public class PortfolioController {
         return ResponseEntity.ok(calculationService.calculateProjection(request));
     }
 
-    @PostMapping("/calculate-from-allocation")
-    public ResponseEntity<CalculationResponse> calculateFromAllocation(
-            @RequestParam Double initialCapital,
-            @RequestParam Double yearlySavings,
-            @RequestParam Integer timeHorizonYears,
-            @RequestBody Map<String, Double> allocations) {
-        
-        Map<String, Double> fundYields = new HashMap<>();
-        fundRepository.findAll().forEach(f -> fundYields.put(f.getTicker(), f.getAverageAnnualYield()));
-        double portfolioYield = calculationService.calculatePortfolioYield(allocations, fundYields);
-
-        return ResponseEntity.ok(calculationService.calculateProjection(
-                new CalculationRequest(initialCapital, yearlySavings, timeHorizonYears, portfolioYield)));
-    }
 }

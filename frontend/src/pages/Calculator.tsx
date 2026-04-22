@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import type { CalculationResponse, Portfolio, Fund } from '../types';
-import { calculateProjection, fetchPortfolios, fetchFunds, getStoredPortfolios, storePortfolio, getUserId, DEFAULT_ALLOCATIONS } from '../api';
-import { calculatePortfolioYield } from '../utils/calculations';
+import type { CalculationResponse, Portfolio } from '../types';
+import { calculateProjection, fetchPortfolios, getStoredPortfolios, storePortfolio, getUserId, DEFAULT_ALLOCATIONS } from '../api';
+import { calculatePortfolioYield, type CagrPeriod } from '../utils/calculations';
 import Dropdown from '../components/Dropdown';
 import AuthButton from '../components/AuthButton';
 
@@ -24,54 +24,59 @@ const Slider = ({ label, value, onChange, min, max, step, format }: {
 
 export default function Calculator() {
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
-  const [funds, setFunds] = useState<Fund[]>([]);
   const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(null);
   const [manualYield, setManualYield] = useState(false);
   const [capital, setCapital] = useState(100000);
   const [savings, setSavings] = useState(20000);
   const [years, setYears] = useState(20);
   const [yield_, setYield] = useState(10.5);
+  const [cagrPeriod, setCagrPeriod] = useState<CagrPeriod>(15);
   const [result, setResult] = useState<CalculationResponse | null>(null);
+  const [yieldLoading, setYieldLoading] = useState(false);
 
   useEffect(() => {
     const loggedIn = isLoggedIn();
-    Promise.all([fetchFunds()]).then(([f]) => {
-      setFunds(f);
-      if (loggedIn) {
-        fetchPortfolios(getUserId()!).then(p => {
-          setPortfolios(p);
-          loadSavedPortfolio(p, f);
-        });
-      } else {
-        let stored = getStoredPortfolios();
-        if (stored.length === 0) {
-          const newP = storePortfolio('My Portfolio', DEFAULT_ALLOCATIONS);
-          stored = [newP];
-        }
-        setPortfolios(stored);
-        loadSavedPortfolio(stored, f);
+    if (loggedIn) {
+      fetchPortfolios(getUserId()!).then(p => {
+        setPortfolios(p);
+        loadSavedPortfolio(p);
+      });
+    } else {
+      let stored = getStoredPortfolios();
+      if (stored.length === 0) {
+        const newP = storePortfolio('My Portfolio', DEFAULT_ALLOCATIONS);
+        stored = [newP];
       }
-    });
+      setPortfolios(stored);
+      loadSavedPortfolio(stored);
+    }
 
-    function loadSavedPortfolio(p: Portfolio[], f: Fund[]) {
+    function loadSavedPortfolio(p: Portfolio[]) {
       if (p.length) {
         const savedId = localStorage.getItem('selectedPortfolioId');
         const target = savedId ? p.find(x => String(x.id) === savedId) : null;
-        if (target) loadPortfolio(target, f);
-        else loadPortfolio(p[0], f);
+        if (target) loadPortfolio(target);
+        else loadPortfolio(p[0]);
       }
     }
   }, []);
 
-  const loadPortfolio = (p: Portfolio, f: Fund[]) => {
+  const loadPortfolio = async (p: Portfolio) => {
     setSelectedPortfolio(p);
     const allocs = JSON.parse(p.allocations);
-    setSelectedPortfolio(p);
     setManualYield(false);
-    const y = calculatePortfolioYield(f, allocs);
-    setYield(y);
+    setYieldLoading(true);
+    const y = await calculatePortfolioYield(allocs, cagrPeriod);
+    setYield(y * 100);
+    setYieldLoading(false);
     localStorage.setItem('selectedPortfolioId', p.id.toString());
   };
+
+  useEffect(() => {
+    if (selectedPortfolio && !manualYield) {
+      loadPortfolio(selectedPortfolio);
+    }
+  }, [cagrPeriod]);
 
   useEffect(() => {
     const id = setTimeout(() => calculateProjection({ initialCapital: capital, yearlySavings: savings, timeHorizonYears: years, portfolioYield: yield_ }).then(setResult), 300);
@@ -93,12 +98,28 @@ export default function Calculator() {
         <Dropdown
           items={portfolios.map(p => ({ id: p.id, label: p.name }))}
           selectedId={manualYield ? 'manual' : selectedPortfolio?.id ?? null}
-          onSelect={p => loadPortfolio(portfolios.find(x => x.id === p.id)!, funds)}
+          onSelect={p => loadPortfolio(portfolios.find(x => x.id === p.id)!)}
           placeholder="-- select --"
           manualOption={{ id: 'manual', label: '-- manual --' }}
           onManual={() => { setManualYield(true); setSelectedPortfolio(null); }}
         />
-        {selectedPortfolio && <span style={{ marginLeft: 10, color: '#666' }}>(yield: {yield_.toFixed(2)}%)</span>}
+        {selectedPortfolio && <span style={{ marginLeft: 10, color: '#666' }}>
+          (yield: {yieldLoading ? '...' : `${yield_.toFixed(2)}%`})
+        </span>}
+      </div>
+
+      <div style={{ marginBottom: 20 }}>
+        <label>CAGR Period: </label>
+        <select
+          value={cagrPeriod}
+          onChange={e => setCagrPeriod(Number(e.target.value) as CagrPeriod)}
+          className="input"
+          style={{ width: 'auto' }}
+        >
+          <option value={5}>5-Year</option>
+          <option value={10}>10-Year</option>
+          <option value={15}>15-Year</option>
+        </select>
       </div>
 
       <Slider label="Initial Capital" value={capital} onChange={setCapital} min={0} max={1000000} step={10000} format={fmt} />

@@ -17,7 +17,4 @@ public class Fund {
     private String ticker;
 
     private String name;
-    private Double averageAnnualYield;
-    private String description;
-    private Double weight = 0.0;
 }
