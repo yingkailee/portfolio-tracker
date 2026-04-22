@@ -4,8 +4,8 @@ import com.yingkai.financial.portfolio_tracker_backend.config.JwtUtil;
 import com.yingkai.financial.portfolio_tracker_backend.dto.RegisterRequest;
 import com.yingkai.financial.portfolio_tracker_backend.entity.Portfolio;
 import com.yingkai.financial.portfolio_tracker_backend.entity.User;
-import com.yingkai.financial.portfolio_tracker_backend.repository.PortfolioRepository;
-import com.yingkai.financial.portfolio_tracker_backend.repository.UserRepository;
+import com.yingkai.financial.portfolio_tracker_backend.service.PortfolioService;
+import com.yingkai.financial.portfolio_tracker_backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,14 +19,14 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class AuthController {
 
-    private final UserRepository userRepository;
-    private final PortfolioRepository portfolioRepository;
+    private final UserService userService;
+    private final PortfolioService portfolioService;
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody RegisterRequest request) {
-        User user = userRepository.findByUsername(request.getUsername());
+        User user = userService.findByUsername(request.getUsername()).orElse(null);
         if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password"));
         }
@@ -45,19 +45,19 @@ public class AuthController {
         if (request.getPassword().length() < 4) {
             return ResponseEntity.badRequest().body(Map.of("message", "Password must be at least 4 characters"));
         }
-        if (userRepository.findByUsername(request.getUsername()) != null) {
+        if (userService.findByUsername(request.getUsername()).isPresent()) {
             return ResponseEntity.badRequest().body(Map.of("message", "Username already taken"));
         }
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user = userRepository.save(user);
+        user = userService.save(user);
 
         Portfolio portfolio = new Portfolio();
         portfolio.setName("My Portfolio");
         portfolio.setAllocations("{\"VOO\":0.7,\"BND\":0.3}");
         portfolio.setUser(user);
-        portfolioRepository.save(portfolio);
+        portfolioService.save(portfolio);
 
         String token = jwtUtil.generateToken(user.getUsername(), user.getId());
         return ResponseEntity.ok(Map.of("token", token, "userId", user.getId()));
