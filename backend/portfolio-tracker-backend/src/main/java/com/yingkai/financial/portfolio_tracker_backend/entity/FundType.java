@@ -15,7 +15,6 @@ public enum FundType {
     C("C", "Citigroup Inc."),
     COST("COST", "Costco Wholesale Corporation"),
     CSCO("CSCO", "Cisco Systems Inc."),
-    CVS("CVS", "CVS Health Corporation"),
     CVX("CVX", "Chevron Corporation"),
     DIS("DIS", "The Walt Disney Company"),
     FXAIX("FXAIX", "Fidelity 500 Index Fund"),
