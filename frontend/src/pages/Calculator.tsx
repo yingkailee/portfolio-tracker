@@ -154,69 +154,76 @@ export default function Calculator() {
 
       {result && (
         <div className="alert-result">
-          <h2 className="section-header">Results</h2>
-          <div className="result-row">
-            <span>Initial Capital:</span>
-            <span>{fmt(result.initialCapital)}</span>
-          </div>
-          <div className="result-row">
-            <span>Additional Investments:</span>
-            <span>{fmt(result.additionalInvestments)}</span>
-          </div>
-          <div className="result-row-lg">
-            <span>Total Growth:</span>
-            <span style={{ color: '#2563eb' }}>{fmt(result.totalGrowth)}</span>
-          </div>
-          <div className="result-total">
-            <span className="result-label">Final Net Worth: </span>
-            <strong style={{ color: '#16a34a', fontSize: '24px' }}>{fmt(result.finalNetWorth)}</strong>
-          </div>
-
-          {growthData.length > 0 && (
-            <div style={{ marginTop: 30 }}>
-              <h3 className="section-header">Growth Over Time</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={growthData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorNetWorth" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#16a34a" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#16a34a" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                  <XAxis 
-                    dataKey="year" 
-                    tickFormatter={(v) => `Year ${v}`}
-                    tick={{ fontSize: 12 }}
-                  />
-                  <YAxis 
-                    tickFormatter={fmtCompact}
-                    tick={{ fontSize: 12 }}
-                  />
-                  <Tooltip 
-                    formatter={(value) => fmt(value as number)}
-                    labelFormatter={(label) => `Year ${label}`}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="netWorth" 
-                    stroke="#16a34a" 
-                    fillOpacity={1} 
-                    fill="url(#colorNetWorth)" 
-                    name="Net Worth"
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="contributions" 
-                    stroke="#2563eb" 
-                    strokeDasharray="5 5" 
-                    dot={false}
-                    name="Contributions"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+          <div style={{ display: 'flex', gap: 40 }}>
+            <div style={{ flex: 1 }}>
+              <h2 className="section-header">Results</h2>
+              <div className="result-row">
+                <span>Initial Capital:</span>
+                <span>{fmt(result.initialCapital)}</span>
+              </div>
+              <div className="result-row">
+                <span>Additional Investments:</span>
+                <span>{fmt(result.additionalInvestments)}</span>
+              </div>
+              <div className="result-row-lg">
+                <span>Total Growth:</span>
+                <span style={{ color: '#2563eb' }}>{fmt(result.totalGrowth)}</span>
+              </div>
+              <div className="result-total">
+                <span className="result-label">Final Net Worth: </span>
+                <strong style={{ color: '#16a34a', fontSize: '24px' }}>{fmt(result.finalNetWorth)}</strong>
+              </div>
             </div>
-          )}
+
+            <div style={{ flex: 1.5 }}>
+              {growthData.length > 0 && (
+                <div>
+                  <h3 className="section-header">Growth Over Time</h3>
+                  <ResponsiveContainer width="100%" height={280}>
+                    <AreaChart data={growthData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorNetWorth" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#16a34a" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#16a34a" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                      <XAxis 
+                        dataKey="year" 
+                        tickFormatter={(v) => `Y${v}`}
+                        tick={{ fontSize: 11 }}
+                      />
+                      <YAxis 
+                        tickFormatter={fmtCompact}
+                        tick={{ fontSize: 11 }}
+                        width={50}
+                      />
+                      <Tooltip 
+                        formatter={(value) => fmt(value as number)}
+                        labelFormatter={(label) => `Year ${label}`}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="netWorth" 
+                        stroke="#16a34a" 
+                        fillOpacity={1} 
+                        fill="url(#colorNetWorth)" 
+                        name="Net Worth"
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="contributions" 
+                        stroke="#2563eb" 
+                        strokeDasharray="5 5" 
+                        dot={false}
+                        name="Contributions"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
