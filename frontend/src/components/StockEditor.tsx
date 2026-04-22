@@ -17,12 +17,14 @@ export default function StockEditor({
   onSelectedTickersChange,
 }: StockEditorProps) {
   const [showPicker, setShowPicker] = useState(false);
+  const [search, setSearch] = useState('');
   const pickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
         setShowPicker(false);
+        setSearch('');
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -30,7 +32,12 @@ export default function StockEditor({
   }, []);
 
   const selectedFunds = funds.filter(f => selectedTickers.includes(f.ticker));
-  const availableFunds = funds.filter(f => !selectedTickers.includes(f.ticker));
+  const availableFunds = funds
+    .filter(f => !selectedTickers.includes(f.ticker))
+    .filter(f => {
+      const query = search.toLowerCase();
+      return f.ticker.toLowerCase().includes(query) || f.name.toLowerCase().includes(query);
+    });
   const totalPercent = Object.values(allocations).reduce((sum, v) => sum + v, 0) * 100;
   const isValid = Math.abs(totalPercent - 100) < 0.1;
 
@@ -108,11 +115,23 @@ export default function StockEditor({
         </button>
         {showPicker && (
           <div className="picker">
-            {availableFunds.map(fund => (
-              <div key={fund.ticker} onClick={() => addFund(fund.ticker)} className="picker-item">
-                <strong>{fund.ticker}</strong> - {fund.name}
-              </div>
-            ))}
+            <input
+              type="text"
+              placeholder="Search by ticker or name..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              autoFocus
+              style={{ width: '100%', padding: '8px', marginBottom: 8, boxSizing: 'border-box' }}
+            />
+            {availableFunds.length === 0 ? (
+              <div style={{ color: '#666', padding: 8 }}>No funds found</div>
+            ) : (
+              availableFunds.map(fund => (
+                <div key={fund.ticker} onClick={() => addFund(fund.ticker)} className="picker-item">
+                  <strong>{fund.ticker}</strong> - {fund.name}
+                </div>
+              ))
+            )}
           </div>
         )}
       </div>
