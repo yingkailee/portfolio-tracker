@@ -29,8 +29,6 @@ public enum FundType {
     TSLA("TSLA", "Tesla Inc."),
     JPM("JPM", "JPMorgan Chase & Co."),
     WMT("WMT", "Walmart Inc."),
-    BRK_A("BRK.A", "Berkshire Hathaway Inc. Class A"),
-    BRK_B("BRK.B", "Berkshire Hathaway Inc. Class B"),
     LLY("LLY", "Eli Lilly and Company"),
     XOM("XOM", "Exxon Mobil Corporation"),
     V("V", "Visa Inc."),
