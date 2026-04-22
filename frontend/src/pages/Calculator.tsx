@@ -110,6 +110,8 @@ export default function Calculator() {
     setYield(v);
   };
 
+  const yieldLabel = sliderTouched || manualYield ? "Selected Yield" : "Portfolio Yield";
+
   useEffect(() => {
     const id = setTimeout(() => calculateProjection({ initialCapital: capital, yearlySavings: savings, timeHorizonYears: years, portfolioYield: yield_ }).then(setResult), 300);
     return () => clearTimeout(id);
@@ -158,7 +160,7 @@ export default function Calculator() {
       <Slider label="Yearly Savings" value={savings} onChange={setSavings} min={0} max={200000} step={1000} format={fmt} />
       <Slider label="Time Horizon" value={years} onChange={setYears} min={1} max={50} step={1} format={v => `${v} years`} />
       <Slider 
-            label={(sliderTouched || manualYield) ? "Yield" : "Portfolio Yield"} 
+            label={yieldLabel} 
             value={yield_} 
             onChange={handleYieldChange} 
             min={0} 
