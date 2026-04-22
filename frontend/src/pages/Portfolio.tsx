@@ -66,6 +66,10 @@ export default function Portfolio() {
   const totalAllocation = Object.values(allocations).reduce((sum, v) => sum + v, 0);
   const isValidAllocation = Math.abs(totalAllocation - 1) < 0.001;
 
+  useEffect(() => {
+    setSavedMsg('');
+  }, [allocations]);
+
   const handleCreate = () => {
     setError('');
     if (!name) { setError('Enter a name'); return; }
