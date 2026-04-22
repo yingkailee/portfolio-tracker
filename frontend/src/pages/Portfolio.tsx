@@ -156,7 +156,10 @@ export default function Portfolio() {
         />
         <AllocationChart funds={funds} allocations={allocations} />
       </div>
-      <FundPerformanceDisplay />
+
+      <div style={{ marginTop: 20 }}>
+        <FundPerformanceDisplay />
+      </div>
     </div>
   );
 }

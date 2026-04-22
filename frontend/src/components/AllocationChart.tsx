@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import type { Fund, Allocations, FundPerformance } from '../types';
 
@@ -58,6 +58,8 @@ async function fetchAllCagrs(allocations: Allocations): Promise<YieldData> {
 export default function AllocationChart({ funds, allocations }: AllocationChartProps) {
   const [yields, setYields] = useState<YieldData>({ cagr5yr: 0, cagr10yr: 0, cagr15yr: 0 });
   const [loading, setLoading] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const allocationsJson = JSON.stringify(allocations);
 
   useEffect(() => {
     const tickers = Object.keys(allocations);
@@ -65,12 +67,20 @@ export default function AllocationChart({ funds, allocations }: AllocationChartP
       setYields({ cagr5yr: 0, cagr10yr: 0, cagr15yr: 0 });
       return;
     }
-    setLoading(true);
-    fetchAllCagrs(allocations).then(y => {
-      setYields(y);
-      setLoading(false);
-    });
-  }, [funds, allocations]);
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setLoading(true);
+      fetchAllCagrs(allocations).then(y => {
+        setYields(y);
+        setLoading(false);
+      });
+    }, 500);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [funds, allocationsJson]);
 
   const selectedTickers = Object.keys(allocations);
   const selectedFunds = funds.filter(f => selectedTickers.includes(f.ticker));
