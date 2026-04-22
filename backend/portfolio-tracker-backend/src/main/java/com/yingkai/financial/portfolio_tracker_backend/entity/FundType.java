@@ -11,6 +11,7 @@ public enum FundType {
     AVGO("AVGO", "Broadcom Inc."),
     BAC("BAC", "Bank of America Corporation"),
     BA("BA", "The Boeing Company"),
+    BND("BND", "Vanguard Total Bond Market ETF"),
     CAT("CAT", "Caterpillar Inc."),
     C("C", "Citigroup Inc."),
     COST("COST", "Costco Wholesale Corporation"),
