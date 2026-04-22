@@ -32,6 +32,7 @@ export default function Calculator() {
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
   const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(null);
   const [manualYield, setManualYield] = useState(false);
+  const [sliderTouched, setSliderTouched] = useState(false);
   const [capital, setCapital] = useState(100000);
   const [savings, setSavings] = useState(20000);
   const [years, setYears] = useState(20);
@@ -90,6 +91,7 @@ export default function Calculator() {
     setSelectedPortfolio(p);
     const allocs = JSON.parse(p.allocations);
     setManualYield(false);
+    setSliderTouched(false);
     setYieldLoading(true);
     const y = await calculatePortfolioYield(allocs, cagrPeriod);
     setYield(y * 100);
@@ -102,6 +104,11 @@ export default function Calculator() {
       loadPortfolio(selectedPortfolio);
     }
   }, [cagrPeriod]);
+
+  const handleYieldChange = (v: number) => {
+    setSliderTouched(true);
+    setYield(v);
+  };
 
   useEffect(() => {
     const id = setTimeout(() => calculateProjection({ initialCapital: capital, yearlySavings: savings, timeHorizonYears: years, portfolioYield: yield_ }).then(setResult), 300);
@@ -126,7 +133,7 @@ export default function Calculator() {
           onSelect={p => loadPortfolio(portfolios.find(x => x.id === p.id)!)}
           placeholder="-- select --"
           manualOption={{ id: 'manual', label: '-- manual --' }}
-          onManual={() => { setManualYield(true); setSelectedPortfolio(null); }}
+          onManual={() => { setManualYield(true); setSliderTouched(false); setSelectedPortfolio(null); }}
         />
         {selectedPortfolio && <span style={{ marginLeft: 10, color: '#666' }}>
           (yield: {yieldLoading ? '...' : `${yield_.toFixed(2)}%`})
@@ -150,7 +157,15 @@ export default function Calculator() {
       <Slider label="Initial Capital" value={capital} onChange={setCapital} min={0} max={1000000} step={10000} format={fmt} />
       <Slider label="Yearly Savings" value={savings} onChange={setSavings} min={0} max={200000} step={1000} format={fmt} />
       <Slider label="Time Horizon" value={years} onChange={setYears} min={1} max={50} step={1} format={v => `${v} years`} />
-      <Slider label="Portfolio Yield" value={yield_} onChange={setYield} min={0} max={20} step={0.5} format={v => `${v.toFixed(2)}%`} />
+      <Slider 
+            label={(sliderTouched || manualYield) ? "Yield" : "Portfolio Yield"} 
+            value={yield_} 
+            onChange={handleYieldChange} 
+            min={0} 
+            max={20} 
+            step={0.5} 
+            format={v => `${v.toFixed(2)}%`} 
+          />
 
       {result && (
         <div className="alert-result">
