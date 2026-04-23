@@ -62,28 +62,30 @@ export default function Calculator() {
 
   useEffect(() => {
     const loggedIn = isLoggedIn();
+    const loadSavedPortfolio = (p: Portfolio[]) => {
+      if (p && p.length) {
+        const savedId = localStorage.getItem('selectedPortfolioId');
+        const target = savedId ? p.find(x => String(x.id) === savedId) : null;
+        if (target) loadPortfolio(target);
+        else if (p[0]) loadPortfolio(p[0]);
+      }
+    };
+
     if (loggedIn) {
       fetchPortfolios(getUserId()!).then(p => {
-        setPortfolios(p);
-        loadSavedPortfolio(p);
+        if (Array.isArray(p)) {
+          setPortfolios(p);
+          loadSavedPortfolio(p);
+        }
       });
     } else {
       let stored = getStoredPortfolios();
-      if (stored.length === 0) {
+      if (!stored || stored.length === 0) {
         const newP = storePortfolio('My Portfolio', DEFAULT_ALLOCATIONS);
         stored = [newP];
       }
       setPortfolios(stored);
       loadSavedPortfolio(stored);
-    }
-
-    function loadSavedPortfolio(p: Portfolio[]) {
-      if (p.length) {
-        const savedId = localStorage.getItem('selectedPortfolioId');
-        const target = savedId ? p.find(x => String(x.id) === savedId) : null;
-        if (target) loadPortfolio(target);
-        else loadPortfolio(p[0]);
-      }
     }
   }, []);
 
@@ -130,7 +132,7 @@ export default function Calculator() {
       <div style={{ marginBottom: 20 }}>
         <label>Portfolio: </label>
         <Dropdown
-          items={portfolios.map(p => ({ id: p.id, label: p.name }))}
+          items={(portfolios || []).map(p => ({ id: p.id, label: p.name }))}
           selectedId={manualYield ? 'manual' : selectedPortfolio?.id ?? null}
           onSelect={p => loadPortfolio(portfolios.find(x => x.id === p.id)!)}
           placeholder="-- select --"
