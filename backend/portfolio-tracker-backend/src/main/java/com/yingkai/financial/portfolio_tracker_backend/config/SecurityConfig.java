@@ -26,7 +26,7 @@ public class SecurityConfig {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-    @Value("${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}")
+    @Value("${CORS_ALLOWED_ORIGINS:*}")
     private String corsAllowedOrigins;
 
     @Bean
@@ -52,14 +52,18 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         
-        List<String> origins = new ArrayList<>();
-        for (String origin : corsAllowedOrigins.split(",")) {
-            String trimmed = origin.trim();
-            if (!trimmed.isEmpty()) {
-                origins.add(trimmed);
+        if ("*".equals(corsAllowedOrigins.trim())) {
+            config.setAllowedOriginPatterns(List.of("*"));
+        } else {
+            List<String> origins = new ArrayList<>();
+            for (String origin : corsAllowedOrigins.split(",")) {
+                String trimmed = origin.trim();
+                if (!trimmed.isEmpty()) {
+                    origins.add(trimmed);
+                }
             }
+            config.setAllowedOrigins(origins);
         }
-        config.setAllowedOrigins(origins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
