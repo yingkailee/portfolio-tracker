@@ -1,5 +1,7 @@
 import type { Allocations, FundPerformance } from '../types';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+
 export type CagrPeriod = 5 | 10 | 15;
 
 export async function calculatePortfolioYield(
@@ -11,7 +13,7 @@ export async function calculatePortfolioYield(
 
   const performancePromises = tickers.map(async (ticker) => {
     try {
-      const res = await fetch(`http://localhost:8080/api/fund-performance/${ticker}`);
+      const res = await fetch(`${API_BASE}/fund-performance/${ticker}`);
       if (!res.ok) return { ticker, cagr: 0 };
       const perf: FundPerformance = await res.json();
       let cagr = 0;
