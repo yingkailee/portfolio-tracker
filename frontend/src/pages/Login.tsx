@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import AuthForm from '../components/AuthForm';
-import { setUserId, setToken } from '../api';
+import { setUserId, setToken, API_BASE } from '../api';
 
 export default function Login() {
   const [error, setError] = useState('');
@@ -21,7 +21,7 @@ export default function Login() {
     const password = formData.get('password') as string;
 
     try {
-      const res = await fetch('http://localhost:8080/api/login', {
+      const res = await fetch(`${API_BASE}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
