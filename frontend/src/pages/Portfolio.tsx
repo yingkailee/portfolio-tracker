@@ -20,26 +20,38 @@ export default function Portfolio() {
   const [selectedId, setSelectedId] = useState<number | string | null>(null);
   const [error, setError] = useState('');
   const [savedMsg, setSavedMsg] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loggedIn = isLoggedIn();
-    Promise.all([fetchFunds()]).then(([f]) => {
-      setFunds(f);
-      if (loggedIn) {
-        fetchPortfolios(getUserId()!).then(p => {
-          setPortfolios(p);
-          loadSavedPortfolio(p);
-        });
-      } else {
-        let stored = getStoredPortfolios();
-        if (stored.length === 0) {
-          const newP = storePortfolio('My Portfolio', DEFAULT_ALLOCATIONS);
-          stored = [newP];
+    setLoading(true);
+    fetchFunds()
+      .then((f) => {
+        setFunds(f);
+        if (loggedIn) {
+          fetchPortfolios(getUserId()!).then(p => {
+            setPortfolios(p);
+            loadSavedPortfolio(p);
+          }).catch(() => {
+            setError('Failed to load portfolios');
+          });
+        } else {
+          let stored = getStoredPortfolios();
+          if (stored.length === 0) {
+            const newP = storePortfolio('My Portfolio', DEFAULT_ALLOCATIONS);
+            stored = [newP];
+          }
+          setPortfolios(stored);
+          loadSavedPortfolio(stored);
         }
-        setPortfolios(stored);
-        loadSavedPortfolio(stored);
-      }
-    });
+      })
+      .catch((err) => {
+        console.error('Failed to fetch funds:', err);
+        setError('Failed to connect to server');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
 
     function loadSavedPortfolio(p: Portfolio[]) {
       if (p.length) {
@@ -133,37 +145,54 @@ export default function Portfolio() {
         </div>
       </div>
 
-      {!isLoggedIn() && (
-        <div className="alert alert-yellow">
-          Guest mode: portfolios saved locally. <Link to="/login" className="link">Login</Link> or <Link to="/register" className="link link-green">Register</Link> to save to database.
+      {loading ? (
+        <div className="container" style={{ textAlign: 'center', padding: 50 }}>
+          <p>Loading...</p>
         </div>
+      ) : error ? (
+        <div className="alert alert-red">
+          {error}
+          <button onClick={() => window.location.reload()} style={{ marginLeft: 10 }}>Retry</button>
+        </div>
+      ) : funds.length === 0 ? (
+        <div className="alert alert-red">
+          No funds loaded from server. Check API connection.
+        </div>
+      ) : (
+        <>
+          {!isLoggedIn() && (
+            <div className="alert alert-yellow">
+              Guest mode: portfolios saved locally. <Link to="/login" className="link">Login</Link> or <Link to="/register" className="link link-green">Register</Link> to save to database.
+            </div>
+          )}
+
+          <div className="flex-gap-lg">
+            <AllocationEditor
+              funds={funds}
+              portfolios={portfolios}
+              allocations={allocations}
+              selectedTickers={selectedTickers}
+              selectedId={selectedId}
+              name={name}
+              isValidAllocation={isValidAllocation}
+              onAllocationsChange={setAllocations}
+              onSelectedTickersChange={setSelectedTickers}
+              onNameChange={setName}
+              onPortfolioSelect={loadPortfolio}
+              onCreate={handleCreate}
+              onUpdate={handleUpdate}
+              onDeleteAll={handleDeleteAll}
+              error={error}
+              savedMsg={savedMsg}
+            />
+            <AllocationChart funds={funds} allocations={allocations} />
+          </div>
+
+          <div style={{ marginTop: 20 }}>
+            <FundPerformanceDisplay />
+          </div>
+        </>
       )}
-
-      <div className="flex-gap-lg">
-        <AllocationEditor
-          funds={funds}
-          portfolios={portfolios}
-          allocations={allocations}
-          selectedTickers={selectedTickers}
-          selectedId={selectedId}
-          name={name}
-          isValidAllocation={isValidAllocation}
-          onAllocationsChange={setAllocations}
-          onSelectedTickersChange={setSelectedTickers}
-          onNameChange={setName}
-          onPortfolioSelect={loadPortfolio}
-          onCreate={handleCreate}
-          onUpdate={handleUpdate}
-          onDeleteAll={handleDeleteAll}
-          error={error}
-          savedMsg={savedMsg}
-        />
-        <AllocationChart funds={funds} allocations={allocations} />
-      </div>
-
-      <div style={{ marginTop: 20 }}>
-        <FundPerformanceDisplay />
-      </div>
     </div>
   );
 }
