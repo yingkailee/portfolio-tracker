@@ -93,12 +93,8 @@ export default function Calculator() {
     setManualYield(false);
     setSliderTouched(false);
     setYieldLoading(true);
-    try {
-      const y = await calculatePortfolioYield(allocs, cagrPeriod);
-      setYield(y * 100);
-    } catch (err) {
-      console.error('Failed to calculate yield:', err);
-    }
+    const y = await calculatePortfolioYield(allocs, cagrPeriod);
+    setYield(y * 100);
     setYieldLoading(false);
     localStorage.setItem('selectedPortfolioId', p.id.toString());
   };
