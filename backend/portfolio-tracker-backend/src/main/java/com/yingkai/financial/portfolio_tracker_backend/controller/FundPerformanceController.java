@@ -24,6 +24,8 @@ public class FundPerformanceController {
             FundPerformance performance = yahooFinanceService.getOrFetchCAGR(ticker);
             return ResponseEntity.ok(performance);
         } catch (Exception e) {
+            System.err.println("Error fetching CAGR for " + ticker + ": " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.internalServerError()
                     .build();
         }

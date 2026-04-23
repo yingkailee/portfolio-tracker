@@ -30,10 +30,13 @@ public class YahooFinanceService {
     }
 
     public FundPerformance getOrFetchCAGR(String ticker) {
+        System.err.println("Fetching CAGR for: " + ticker);
         Timestamp now = Timestamp.from(Instant.now());
         
         Optional<FundPerformance> existing = fundPerformanceRepository.findByTicker(ticker);
+        System.err.println("Existing record found: " + existing.isPresent());
         if (existing.isPresent() && now.before(existing.get().getExpiresAt())) {
+            System.err.println("Using cached record, expires at: " + existing.get().getExpiresAt());
             return existing.get();
         }
 
@@ -41,6 +44,7 @@ public class YahooFinanceService {
     }
 
     public FundPerformance fetchAndStoreCAGR(String ticker) {
+        System.err.println("Fetching from Yahoo Finance for: " + ticker);
         HttpHeaders headers = new HttpHeaders();
         headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
         headers.set("Accept", "application/json");
