@@ -7,9 +7,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class PortfolioTrackerBackendApplication {
 
 	public static void main(String[] args) {
-		System.out.println("DB_URL: " + System.getenv("DB_URL"));
-		System.out.println("DB_USER: " + System.getenv("DB_USER"));
-		System.out.println("DB_PASSWORD: " + (System.getenv("DB_PASSWORD") != null ? "***" : "null"));
+		String url = System.getenv("DB_URL");
+		String user = System.getenv("DB_USER");
+		String pass = System.getenv("DB_PASSWORD");
+		System.out.println("ENV DB_URL: " + url);
+		System.out.println("ENV DB_USER: " + user);
+		System.out.println("ENV DB_PASSWORD: " + (pass != null ? "set" : "null"));
 		SpringApplication.run(PortfolioTrackerBackendApplication.class, args);
 	}
 
