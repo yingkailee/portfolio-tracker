@@ -11,23 +11,26 @@ export async function calculatePortfolioYield(
   const tickers = Object.keys(allocations);
   if (tickers.length === 0) return 0;
 
-  const performancePromises = tickers.map(async (ticker) => {
+  const performances: { ticker: string; cagr: number }[] = [];
+
+  for (const ticker of tickers) {
     try {
       const res = await fetch(`${API_BASE}/fund-performance/${ticker}`);
-      if (!res.ok) return { ticker, cagr: 0 };
-      const perf: FundPerformance = await res.json();
-      let cagr = 0;
-      if (cagrPeriod === 5) cagr = perf.cagr5yr || 0;
-      else if (cagrPeriod === 10) cagr = perf.cagr10yr || 0;
-      else cagr = perf.cagr15yr || 0;
-      return { ticker, cagr };
+      if (res.ok) {
+        const perf: FundPerformance = await res.json();
+        let cagr = 0;
+        if (cagrPeriod === 5) cagr = perf.cagr5yr || 0;
+        else if (cagrPeriod === 10) cagr = perf.cagr10yr || 0;
+        else cagr = perf.cagr15yr || 0;
+        performances.push({ ticker, cagr });
+      }
     } catch {
-      return { ticker, cagr: 0 };
+      // skip failed ticker
     }
-  });
+    // Small delay between requests to avoid overwhelming the connection pool
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
 
-  const performances = await Promise.all(performancePromises);
-  
   return performances.reduce((sum, { ticker, cagr }) => {
     const weight = allocations[ticker] || 0;
     return sum + (weight * cagr);
