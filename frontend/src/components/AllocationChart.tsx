@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import type { Fund, Allocations, FundPerformance } from '../types';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+
 const COLORS = ['#2563eb', '#dc2626', '#16a34a', '#9333ea', '#ea580c', '#0891b2'];
 
 interface AllocationChartProps {
@@ -19,34 +21,36 @@ async function fetchAllCagrs(allocations: Allocations): Promise<YieldData> {
   const tickers = Object.keys(allocations);
   if (tickers.length === 0) return { cagr5yr: 0, cagr10yr: 0, cagr15yr: 0 };
 
-  const performancePromises = tickers.map(async (ticker) => {
-    try {
-      const res = await fetch(`http://localhost:8080/api/fund-performance/${ticker}`);
-      if (!res.ok) return { ticker, cagr5: 0, cagr10: 0, cagr15: 0 };
-      const perf: FundPerformance = await res.json();
-      return { 
-        ticker, 
-        cagr5: perf.cagr5yr || 0, 
-        cagr10: perf.cagr10yr || 0, 
-        cagr15: perf.cagr15yr || 0 
-      };
-    } catch {
-      return { ticker, cagr5: 0, cagr10: 0, cagr15: 0 };
-    }
-  });
+  const performances: { ticker: string; cagr5: number; cagr10: number; cagr15: number }[] = [];
 
-  const performances = await Promise.all(performancePromises);
-  
+  for (const ticker of tickers) {
+    try {
+      const res = await fetch(`${API_BASE}/fund-performance/${ticker}`);
+      if (res.ok) {
+        const perf: FundPerformance = await res.json();
+        performances.push({
+          ticker,
+          cagr5: perf.cagr5yr || 0,
+          cagr10: perf.cagr10yr || 0,
+          cagr15: perf.cagr15yr || 0
+        });
+      }
+    } catch {
+      // skip failed ticker
+    }
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+
   const cagr5yr = performances.reduce((sum, { ticker, cagr5 }) => {
     const weight = allocations[ticker] || 0;
     return sum + (weight * cagr5);
   }, 0);
-  
+
   const cagr10yr = performances.reduce((sum, { ticker, cagr10 }) => {
     const weight = allocations[ticker] || 0;
     return sum + (weight * cagr10);
   }, 0);
-  
+
   const cagr15yr = performances.reduce((sum, { ticker, cagr15 }) => {
     const weight = allocations[ticker] || 0;
     return sum + (weight * cagr15);
