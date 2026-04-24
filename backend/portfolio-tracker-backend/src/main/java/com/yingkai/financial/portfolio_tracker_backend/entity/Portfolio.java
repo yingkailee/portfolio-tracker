@@ -1,8 +1,9 @@
 package com.yingkai.financial.portfolio_tracker_backend.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "portfolios")
