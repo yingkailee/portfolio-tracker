@@ -6,14 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class PortfolioTrackerBackendApplication {
-
 	public static void main(String[] args) {
-		Dotenv dotenv = Dotenv.configure()
-			.ignoreIfMissing()
-			.load();
-		dotenv.entries().forEach(e ->
-			System.setProperty(e.getKey(), e.getValue())
-		);
+		Dotenv.configure().ignoreIfMissing().load().entries().forEach(e -> System.setProperty(e.getKey(), e.getValue()));
 		SpringApplication.run(PortfolioTrackerBackendApplication.class, args);
 	}
 }
