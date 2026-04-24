@@ -12,10 +12,10 @@ cd ../../frontend && npm install && npm run dev
 - Create portfolios with custom fund allocations
 - Calculate net worth projections with historical CAGR data
 - Guest mode: use locally without login, login to save to database
-- Real-time fund performance from Yahoo Finance
+- Historical fund performance from Yahoo Finance
 - Multiple portfolios supported
 
-## Tech Stack
+## Tech Stack (Deployment)
 
 - Frontend: TypeScript + React (Vercel)
 - Backend: Java + Spring Boot (Render)
