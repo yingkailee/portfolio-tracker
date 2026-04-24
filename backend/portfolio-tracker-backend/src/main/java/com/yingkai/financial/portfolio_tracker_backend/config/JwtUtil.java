@@ -12,7 +12,7 @@ import java.util.Date;
 public class JwtUtil {
     private final SecretKey key;
 
-    public JwtUtil(@Value("${JWT_SECRET}") String secret) {
+    public JwtUtil(@Value("${JWT_SECRET:default-secret-for-dev-only}") String secret) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
