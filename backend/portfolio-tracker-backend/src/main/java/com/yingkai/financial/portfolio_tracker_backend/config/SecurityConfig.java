@@ -26,7 +26,7 @@ public class SecurityConfig {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-    @Value("${CORS_ALLOWED_ORIGINS:*}")
+    @Value("${CORS_ALLOWED_ORIGINS}")
     private String corsAllowedOrigins;
 
     @Bean

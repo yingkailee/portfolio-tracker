@@ -2,16 +2,19 @@ package com.yingkai.financial.portfolio_tracker_backend.config;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Base64;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private static final String SECRET = "my-super-secret-key-that-is-at-least-256-bits-long";
-    private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private final SecretKey key;
+
+    public JwtUtil(@Value("${JWT_SECRET}") String secret) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     public String generateToken(String username, int userId) {
         return Jwts.builder()
