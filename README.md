@@ -3,8 +3,8 @@
 ## Setup
 
 ```bash
-cd frontend && npm install
 cd backend/portfolio-tracker-backend && ./mvnw spring-boot:run
+cd frontend && npm install && npm run dev
 ```
 
 ## Features
