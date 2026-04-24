@@ -4,7 +4,7 @@
 
 ```bash
 cd backend/portfolio-tracker-backend && ./mvnw spring-boot:run
-cd frontend && npm install && npm run dev
+cd ../../frontend && npm install && npm run dev
 ```
 
 ## Features
@@ -17,6 +17,6 @@ cd frontend && npm install && npm run dev
 
 ## Tech Stack
 
-- Frontend: React + TypeScript + Vite (Vercel)
-- Backend: Spring Boot (Java) (Render)
+- Frontend: TypeScript + React (Vercel)
+- Backend: Java + Spring Boot (Render)
 - Database: PostgreSQL (Supabase)
