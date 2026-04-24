@@ -2,6 +2,7 @@ package com.yingkai.financial.portfolio_tracker_backend.controller;
 
 import com.yingkai.financial.portfolio_tracker_backend.dto.PortfolioRequest;
 import com.yingkai.financial.portfolio_tracker_backend.entity.Portfolio;
+import com.yingkai.financial.portfolio_tracker_backend.entity.User;
 import com.yingkai.financial.portfolio_tracker_backend.service.PortfolioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,11 @@ public class PortfolioApiController {
         Portfolio portfolio = new Portfolio();
         portfolio.setName(request.getName());
         portfolio.setAllocations(request.getAllocations());
+        if (request.getUserId() != null) {
+            User user = new User();
+            user.setId(request.getUserId());
+            portfolio.setUser(user);
+        }
         return ResponseEntity.ok(portfolioService.save(portfolio));
     }
 
