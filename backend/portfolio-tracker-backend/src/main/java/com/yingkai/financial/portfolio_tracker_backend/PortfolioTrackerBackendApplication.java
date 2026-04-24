@@ -8,7 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class PortfolioTrackerBackendApplication {
 
 	public static void main(String[] args) {
-		Dotenv.configure().load();
+		Dotenv dotenv = Dotenv.configure().load();
+		dotenv.entries().forEach(e -> 
+			System.setProperty(e.getKey(), e.getValue())
+		);
 		SpringApplication.run(PortfolioTrackerBackendApplication.class, args);
 	}
 
