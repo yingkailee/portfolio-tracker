@@ -21,20 +21,24 @@ public class DataInitializer {
     @Bean
     CommandLineRunner initDatabase() {
         return args -> {
-            if (fundRepository.count() == 0) {
-                ObjectMapper mapper = new ObjectMapper();
-                Map<String, List<Map<String, String>>> data = mapper.readValue(
-                    getClass().getResourceAsStream("/funds.json"),
-                    new TypeReference<>() {}
-                );
-                
-                for (Map<String, String> fund : data.get("funds")) {
-                    Fund f = new Fund();
-                    f.setTicker(fund.get("ticker"));
-                    f.setName(fund.get("name"));
-                    fundRepository.save(f);
-                }
-            }
+            if (fundRepository.count() > 0) return;
+            
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, List<Map<String, String>>> data = mapper.readValue(
+                getClass().getResourceAsStream("/funds.json"),
+                new TypeReference<>() {}
+            );
+            
+            List<Fund> funds = data.get("funds").stream()
+                .map(f -> {
+                    Fund fund = new Fund();
+                    fund.setTicker(f.get("ticker"));
+                    fund.setName(f.get("name"));
+                    return fund;
+                })
+                .toList();
+            
+            fundRepository.saveAll(funds);
         };
     }
 }
