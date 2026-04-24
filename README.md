@@ -1,5 +1,12 @@
 # Portfolio Tracker
 
+## Setup
+
+```bash
+cd frontend && npm install
+cd backend/portfolio-tracker-backend && ./mvnw spring-boot:run
+```
+
 ## Features
 
 - Create portfolios with custom fund allocations
@@ -10,6 +17,6 @@
 
 ## Tech Stack
 
-- Frontend: React + TypeScript + Vite (deployed on Vercel)
-- Backend: Spring Boot (Java) (deployed on Render)
-- Database: PostgreSQL (hosted on Supabase)
+- Frontend: React + TypeScript + Vite (Vercel)
+- Backend: Spring Boot (Java) (Render)
+- Database: PostgreSQL (Supabase)
