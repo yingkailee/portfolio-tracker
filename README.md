@@ -2,6 +2,8 @@
 
 ## Quick Start with Docker
 
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop)
+2. Run:
 ```bash
 docker-compose up --build
 ```
@@ -9,18 +11,6 @@ docker-compose up --build
 - Frontend: http://localhost:5173
 - Backend: http://localhost:8080
 - Uses H2 in-memory database (no setup required)
-
-## Local Development
-
-**Backend:**
-```bash
-cd backend/portfolio-tracker-backend && ./mvnw spring-boot:run
-```
-
-**Frontend:**
-```bash
-cd frontend && npm install && npm run dev
-```
 
 ## Features
 
