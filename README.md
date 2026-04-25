@@ -1,10 +1,25 @@
 # Portfolio Tracker
 
-## Setup
+## Quick Start with Docker
 
 ```bash
+docker-compose up --build
+```
+
+- Frontend: http://localhost:5173
+- Backend: http://localhost:8080
+- Uses H2 in-memory database (no setup required)
+
+## Local Development
+
+**Backend:**
+```bash
 cd backend/portfolio-tracker-backend && ./mvnw spring-boot:run
-cd ../../frontend && npm install && npm run dev
+```
+
+**Frontend:**
+```bash
+cd frontend && npm install && npm run dev
 ```
 
 ## Features
