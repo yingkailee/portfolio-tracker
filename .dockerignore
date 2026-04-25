@@ -1,0 +1,7 @@
+node_modules
+target
+.env
+.git
+*.md
+.DS_Store
+backend/portfolio-tracker-backend/.env
