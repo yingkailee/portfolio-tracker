@@ -5,7 +5,7 @@
 1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop)
 2. Run:
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 - Frontend: http://localhost:5173
