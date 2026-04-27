@@ -1,9 +1,6 @@
 import { Link } from 'react-router-dom';
 import { logout } from '../api';
-
-function isLoggedIn() {
-  return !!localStorage.getItem('token');
-}
+import { isLoggedIn } from '../utils/auth';
 
 export default function AuthButton() {
   const loggedIn = isLoggedIn();

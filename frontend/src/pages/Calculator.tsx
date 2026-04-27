@@ -4,6 +4,7 @@ import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, A
 import type { CalculationResponse, Portfolio } from '../types';
 import { calculateProjection, fetchPortfolios, getStoredPortfolios, storePortfolio, getUserId, DEFAULT_ALLOCATIONS } from '../api';
 import { calculatePortfolioYield, type CagrPeriod } from '../utils/calculations';
+import { isLoggedIn } from '../utils/auth';
 import Dropdown from '../components/Dropdown';
 import AuthButton from '../components/AuthButton';
 
@@ -13,10 +14,6 @@ const fmtCompact = (v: number) => {
   if (v >= 1000) return `$${(v / 1000).toFixed(0)}K`;
   return `$${v}`;
 };
-
-function isLoggedIn() {
-  return !!localStorage.getItem('token');
-}
 
 const Slider = ({ label, value, onChange, min, max, step, format }: {
   label: string; value: number; onChange: (v: number) => void;

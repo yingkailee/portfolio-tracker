@@ -2,14 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { Fund, Allocations, Portfolio } from '../types';
 import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, deleteAllPortfolios, getStoredPortfolios, storePortfolio, deleteAllStoredPortfolios, getUserId, DEFAULT_ALLOCATIONS } from '../api';
+import { isLoggedIn } from '../utils/auth';
 import AuthButton from '../components/AuthButton';
 import AllocationEditor from '../components/AllocationEditor';
 import AllocationChart from '../components/AllocationChart';
 import FundPerformanceDisplay from '../components/FundPerformanceDisplay';
-
-function isLoggedIn() {
-  return !!localStorage.getItem('token');
-}
 
 export default function Portfolio() {
   const [funds, setFunds] = useState<Fund[]>([]);

@@ -1,28 +1,30 @@
 import type { Fund, Allocations, CalculationResponse, Portfolio, FundPerformance } from './types';
+import { getToken, getUserId as getUserIdFromAuth, setUserIdAsNumber, setToken as setTokenToAuth, isLoggedIn, removeToken } from './utils/auth';
 
 export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
 function getAuthHeader(): string {
-  const token = localStorage.getItem('token');
+  const token = getToken();
   return token ? `Bearer ${token}` : '';
 }
 
 export function getUserId(): number | null {
-  const id = localStorage.getItem('userId');
-  return id ? parseInt(id) : null;
+  return getUserIdFromAuth();
 }
 
 export function setUserId(id: number): void {
-  localStorage.setItem('userId', id.toString());
+  setUserIdAsNumber(id);
 }
 
-export function getToken(): string | null {
-  return localStorage.getItem('token');
+export function getTokenFromStorage(): string | null {
+  return getToken();
 }
 
-export function setToken(token: string): void {
-  localStorage.setItem('token', token);
+export function setTokenToStorage(token: string): void {
+  setTokenToAuth(token);
 }
+
+export { isLoggedIn, setTokenToAuth as setToken };
 
 export async function fetchFunds(): Promise<Fund[]> {
   const res = await fetch(`${API_BASE}/funds`, {
@@ -103,7 +105,7 @@ export async function calculateProjection(request: {
 }
 
 export function logout() {
-  localStorage.removeItem('token');
+  removeToken();
 }
 
 export const DEFAULT_ALLOCATIONS: Allocations = { VOO: 0.7, BND: 0.3 };
@@ -146,5 +148,5 @@ function saveToLocalStorage(portfolios: Portfolio[]): void {
 }
 
 export function isGuestMode(): boolean {
-  return !localStorage.getItem('token');
+  return !isLoggedIn();
 }
