@@ -22,6 +22,13 @@ public class FundPerformance {
     private Double cagr10yr;
     private Double cagr15yr;
 
+    @Column(columnDefinition = "TEXT")
+    private String monthlyReturns;
+
+    private Double vol5yr;
+    private Double vol10yr;
+    private Double vol15yr;
+
     private LocalDate dataStartDate;
     private LocalDate dataEndDate;
 

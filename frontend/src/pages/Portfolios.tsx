@@ -3,21 +3,24 @@ import { useNavigate, Link } from 'react-router-dom';
 import type { Portfolio } from '../types';
 import { fetchPortfolios, getStoredPortfolios, getUserId } from '../api';
 import { isLoggedIn } from '../utils/auth';
-import { calculatePortfolioYield } from '../utils/calculations';
+import { calculatePortfolioYield, calculatePortfolioVolatility } from '../utils/calculations';
 import AuthButton from '../components/AuthButton';
 
-type SortField = 'name' | 'cagr5' | 'cagr10' | 'cagr15';
+type SortField = 'name' | 'cagr5' | 'cagr10' | 'cagr15' | 'vol5' | 'vol10' | 'vol15';
 type SortDirection = 'asc' | 'desc';
 
-interface PortfolioWithCagr extends Portfolio {
+interface PortfolioWithMetrics extends Portfolio {
   cagr5: number;
   cagr10: number;
   cagr15: number;
+  vol5: number;
+  vol10: number;
+  vol15: number;
 }
 
 export default function Portfolios() {
   const navigate = useNavigate();
-  const [portfolios, setPortfolios] = useState<PortfolioWithCagr[]>([]);
+  const [portfolios, setPortfolios] = useState<PortfolioWithMetrics[]>([]);
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [loading, setLoading] = useState(true);
@@ -27,21 +30,25 @@ export default function Portfolios() {
     setLoading(true);
 
     const loadPortfolios = async (p: Portfolio[]) => {
-      const withCagr: PortfolioWithCagr[] = await Promise.all(
+      const withMetrics: PortfolioWithMetrics[] = await Promise.all(
         p.map(async (portfolio) => {
           let cagr5 = 0, cagr10 = 0, cagr15 = 0;
+          let vol5 = 0, vol10 = 0, vol15 = 0;
           try {
             const allocs = JSON.parse(portfolio.allocations);
             cagr5 = await calculatePortfolioYield(allocs, 5);
             cagr10 = await calculatePortfolioYield(allocs, 10);
             cagr15 = await calculatePortfolioYield(allocs, 15);
+            vol5 = await calculatePortfolioVolatility(allocs, 5);
+            vol10 = await calculatePortfolioVolatility(allocs, 10);
+            vol15 = await calculatePortfolioVolatility(allocs, 15);
           } catch {
-            // use default cagr
+            // use default values
           }
-          return { ...portfolio, cagr5, cagr10, cagr15 };
+          return { ...portfolio, cagr5, cagr10, cagr15, vol5, vol10, vol15 };
         })
       );
-      setPortfolios(withCagr);
+      setPortfolios(withMetrics);
       setLoading(false);
     };
 
@@ -65,12 +72,18 @@ export default function Portfolios() {
         cmp = a.cagr10 - b.cagr10;
       } else if (sortField === 'cagr15') {
         cmp = a.cagr15 - b.cagr15;
+      } else if (sortField === 'vol5') {
+        cmp = a.vol5 - b.vol5;
+      } else if (sortField === 'vol10') {
+        cmp = a.vol10 - b.vol10;
+      } else if (sortField === 'vol15') {
+        cmp = a.vol15 - b.vol15;
       }
       return sortDirection === 'asc' ? cmp : -cmp;
     });
   }, [portfolios, sortField, sortDirection]);
 
-  const handleRowClick = (portfolio: PortfolioWithCagr) => {
+  const handleRowClick = (portfolio: PortfolioWithMetrics) => {
     localStorage.setItem('selectedPortfolioId', String(portfolio.id));
     navigate('/portfolio');
   };
@@ -132,6 +145,24 @@ export default function Portfolios() {
               >
                 CAGR 15yr{getSortIndicator('cagr15')}
               </th>
+              <th
+                onClick={() => handleSort('vol5')}
+                style={{ cursor: 'pointer', textAlign: 'right' }}
+              >
+                Vol 5yr{getSortIndicator('vol5')}
+              </th>
+              <th
+                onClick={() => handleSort('vol10')}
+                style={{ cursor: 'pointer', textAlign: 'right' }}
+              >
+                Vol 10yr{getSortIndicator('vol10')}
+              </th>
+              <th
+                onClick={() => handleSort('vol15')}
+                style={{ cursor: 'pointer', textAlign: 'right' }}
+              >
+                Vol 15yr{getSortIndicator('vol15')}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -145,6 +176,9 @@ export default function Portfolios() {
                 <td style={{ textAlign: 'right' }}>{portfolio.cagr5.toFixed(2)}%</td>
                 <td style={{ textAlign: 'right' }}>{portfolio.cagr10.toFixed(2)}%</td>
                 <td style={{ textAlign: 'right' }}>{portfolio.cagr15.toFixed(2)}%</td>
+                <td style={{ textAlign: 'right' }}>{portfolio.vol5.toFixed(2)}%</td>
+                <td style={{ textAlign: 'right' }}>{portfolio.vol10.toFixed(2)}%</td>
+                <td style={{ textAlign: 'right' }}>{portfolio.vol15.toFixed(2)}%</td>
               </tr>
             ))}
           </tbody>

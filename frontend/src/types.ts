@@ -40,6 +40,10 @@ export interface FundPerformance {
   cagr5yr: number;
   cagr10yr: number;
   cagr15yr: number;
+  monthlyReturns?: string;
+  vol5yr: number;
+  vol10yr: number;
+  vol15yr: number;
   dataStartDate: string;
   dataEndDate: string;
   calculatedAt: string;

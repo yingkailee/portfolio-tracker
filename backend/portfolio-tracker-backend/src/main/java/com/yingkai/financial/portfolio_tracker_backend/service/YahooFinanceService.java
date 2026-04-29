@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class YahooFinanceService {
@@ -166,6 +167,13 @@ public class YahooFinanceService {
         double cagr10yr = calculateCAGR(monthlyData, 10);
         double cagr5yr = calculateCAGR(monthlyData, 5);
 
+        double[] returns = calculateMonthlyReturns(monthlyData);
+        String monthlyReturnsJson = Arrays.toString(returns);
+
+        double vol15yr = calculateVolatility(returns, 15);
+        double vol10yr = calculateVolatility(returns, 10);
+        double vol5yr = calculateVolatility(returns, 5);
+
         Timestamp nowTimestamp = Timestamp.from(Instant.now());
         Timestamp expiresAt = Timestamp.from(Instant.now().plusSeconds(EXPIRY_DAYS * 24L * 60L * 60L));
 
@@ -174,12 +182,54 @@ public class YahooFinanceService {
         perf.setCagr5yr(cagr5yr);
         perf.setCagr10yr(cagr10yr);
         perf.setCagr15yr(cagr15yr);
+        perf.setMonthlyReturns(monthlyReturnsJson);
+        perf.setVol5yr(vol5yr);
+        perf.setVol10yr(vol10yr);
+        perf.setVol15yr(vol15yr);
         perf.setDataStartDate(startDate);
         perf.setDataEndDate(endDate);
         perf.setCalculatedAt(nowTimestamp);
         perf.setExpiresAt(expiresAt);
 
         return perf;
+    }
+
+    private double[] calculateMonthlyReturns(List<Map.Entry<LocalDate, Double>> monthlyData) {
+        if (monthlyData.size() < 2) return new double[0];
+
+        double[] returns = new double[monthlyData.size() - 1];
+        for (int i = 1; i < monthlyData.size(); i++) {
+            double prevPrice = monthlyData.get(i - 1).getValue();
+            double currPrice = monthlyData.get(i).getValue();
+            if (prevPrice > 0) {
+                returns[i - 1] = (currPrice - prevPrice) / prevPrice;
+            } else {
+                returns[i - 1] = 0;
+            }
+        }
+        return returns;
+    }
+
+    private double calculateVolatility(double[] returns, int years) {
+        if (returns == null || returns.length < 2) return 0;
+
+        int months = years * 12;
+        int startIdx = Math.max(0, returns.length - months);
+
+        double[] periodReturns = Arrays.copyOfRange(returns, startIdx, returns.length);
+        if (periodReturns.length < 2) return 0;
+
+        double mean = 0;
+        for (double r : periodReturns) mean += r;
+        mean /= periodReturns.length;
+
+        double sumSq = 0;
+        for (double r : periodReturns) {
+            sumSq += Math.pow(r - mean, 2);
+        }
+
+        double stdDev = Math.sqrt(sumSq / (periodReturns.length - 1));
+        return stdDev * Math.sqrt(12);
     }
 
     private double calculateCAGR(List<Map.Entry<LocalDate, Double>> monthlyData, int years) {
