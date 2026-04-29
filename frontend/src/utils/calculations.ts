@@ -68,6 +68,19 @@ export async function calculatePortfolioVolatility(
   }, 0) * 100;
 }
 
+export const RISK_FREE_RATE = 4;
+
+export async function calculatePortfolioSharpe(
+  allocations: Allocations,
+  cagrPeriod: CagrPeriod = 15
+): Promise<number> {
+  const cagr = await calculatePortfolioYield(allocations, cagrPeriod);
+  const vol = await calculatePortfolioVolatility(allocations, cagrPeriod);
+  
+  if (vol === 0) return 0;
+  return (cagr - RISK_FREE_RATE) / vol;
+}
+
 export function validateAllocations(allocations: Allocations): boolean {
   const total = Object.values(allocations).reduce((sum, val) => sum + val, 0);
   return Math.abs(total - 1) < 0.001;

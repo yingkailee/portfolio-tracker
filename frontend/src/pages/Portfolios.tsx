@@ -3,10 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import type { Portfolio } from '../types';
 import { fetchPortfolios, getStoredPortfolios, getUserId } from '../api';
 import { isLoggedIn } from '../utils/auth';
-import { calculatePortfolioYield, calculatePortfolioVolatility } from '../utils/calculations';
+import { calculatePortfolioYield, calculatePortfolioVolatility, calculatePortfolioSharpe } from '../utils/calculations';
 import AuthButton from '../components/AuthButton';
 
-type SortField = 'name' | 'cagr5' | 'cagr10' | 'cagr15' | 'vol5' | 'vol10' | 'vol15';
+type SortField = 'name' | 'cagr5' | 'cagr10' | 'cagr15' | 'vol5' | 'vol10' | 'vol15' | 'sharpe5' | 'sharpe10' | 'sharpe15';
 type SortDirection = 'asc' | 'desc';
 
 interface PortfolioWithMetrics extends Portfolio {
@@ -16,6 +16,9 @@ interface PortfolioWithMetrics extends Portfolio {
   vol5: number;
   vol10: number;
   vol15: number;
+  sharpe5: number;
+  sharpe10: number;
+  sharpe15: number;
 }
 
 export default function Portfolios() {
@@ -34,6 +37,7 @@ export default function Portfolios() {
         p.map(async (portfolio) => {
           let cagr5 = 0, cagr10 = 0, cagr15 = 0;
           let vol5 = 0, vol10 = 0, vol15 = 0;
+          let sharpe5 = 0, sharpe10 = 0, sharpe15 = 0;
           try {
             const allocs = JSON.parse(portfolio.allocations);
             cagr5 = await calculatePortfolioYield(allocs, 5);
@@ -42,10 +46,13 @@ export default function Portfolios() {
             vol5 = await calculatePortfolioVolatility(allocs, 5);
             vol10 = await calculatePortfolioVolatility(allocs, 10);
             vol15 = await calculatePortfolioVolatility(allocs, 15);
+            sharpe5 = await calculatePortfolioSharpe(allocs, 5);
+            sharpe10 = await calculatePortfolioSharpe(allocs, 10);
+            sharpe15 = await calculatePortfolioSharpe(allocs, 15);
           } catch {
             // use default values
           }
-          return { ...portfolio, cagr5, cagr10, cagr15, vol5, vol10, vol15 };
+          return { ...portfolio, cagr5, cagr10, cagr15, vol5, vol10, vol15, sharpe5, sharpe10, sharpe15 };
         })
       );
       setPortfolios(withMetrics);
@@ -78,6 +85,12 @@ export default function Portfolios() {
         cmp = a.vol10 - b.vol10;
       } else if (sortField === 'vol15') {
         cmp = a.vol15 - b.vol15;
+      } else if (sortField === 'sharpe5') {
+        cmp = a.sharpe5 - b.sharpe5;
+      } else if (sortField === 'sharpe10') {
+        cmp = a.sharpe10 - b.sharpe10;
+      } else if (sortField === 'sharpe15') {
+        cmp = a.sharpe15 - b.sharpe15;
       }
       return sortDirection === 'asc' ? cmp : -cmp;
     });
@@ -163,6 +176,24 @@ export default function Portfolios() {
               >
                 Vol 15yr{getSortIndicator('vol15')}
               </th>
+              <th
+                onClick={() => handleSort('sharpe5')}
+                style={{ cursor: 'pointer', textAlign: 'right' }}
+              >
+                Sharpe 5yr{getSortIndicator('sharpe5')}
+              </th>
+              <th
+                onClick={() => handleSort('sharpe10')}
+                style={{ cursor: 'pointer', textAlign: 'right' }}
+              >
+                Sharpe 10yr{getSortIndicator('sharpe10')}
+              </th>
+              <th
+                onClick={() => handleSort('sharpe15')}
+                style={{ cursor: 'pointer', textAlign: 'right' }}
+              >
+                Sharpe 15yr{getSortIndicator('sharpe15')}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -179,6 +210,9 @@ export default function Portfolios() {
                 <td style={{ textAlign: 'right' }}>{portfolio.vol5.toFixed(2)}%</td>
                 <td style={{ textAlign: 'right' }}>{portfolio.vol10.toFixed(2)}%</td>
                 <td style={{ textAlign: 'right' }}>{portfolio.vol15.toFixed(2)}%</td>
+                <td style={{ textAlign: 'right' }}>{portfolio.sharpe5.toFixed(2)}</td>
+                <td style={{ textAlign: 'right' }}>{portfolio.sharpe10.toFixed(2)}</td>
+                <td style={{ textAlign: 'right' }}>{portfolio.sharpe15.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
