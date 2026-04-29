@@ -6,6 +6,10 @@ import { isLoggedIn } from '../utils/auth';
 import { calculatePortfolioYield, calculatePortfolioVolatility, calculatePortfolioSharpe } from '../utils/calculations';
 import AuthButton from '../components/AuthButton';
 
+const cellStyle = { padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' };
+const cellNumStyle = { ...cellStyle, textAlign: 'right' as const };
+const headerStyle = { cursor: 'pointer' as const, padding: '12px 8px', borderRight: '1px solid #ddd' };
+
 type SortField = 'name' | 'cagr5' | 'cagr10' | 'cagr15' | 'vol5' | 'vol10' | 'vol15' | 'sharpe5' | 'sharpe10' | 'sharpe15';
 type SortDirection = 'asc' | 'desc';
 
@@ -134,87 +138,31 @@ export default function Portfolios() {
         <table className="table" style={{ width: '100%' }}>
           <thead>
             <tr style={{ borderBottom: '2px solid #333' }}>
-              <th
-                onClick={() => handleSort('name')}
-                style={{ cursor: 'pointer', textAlign: 'left', padding: '12px 8px', borderRight: '1px solid #ddd' }}
-              >
-                Name{getSortIndicator('name')}
-              </th>
-              <th
-                onClick={() => handleSort('cagr5')}
-                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd' }}
-              >
-                CAGR 5yr{getSortIndicator('cagr5')}
-              </th>
-              <th
-                onClick={() => handleSort('cagr10')}
-                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd' }}
-              >
-                CAGR 10yr{getSortIndicator('cagr10')}
-              </th>
-              <th
-                onClick={() => handleSort('cagr15')}
-                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd' }}
-              >
-                CAGR 15yr{getSortIndicator('cagr15')}
-              </th>
-              <th
-                onClick={() => handleSort('vol5')}
-                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd' }}
-              >
-                Vol 5yr{getSortIndicator('vol5')}
-              </th>
-              <th
-                onClick={() => handleSort('vol10')}
-                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd' }}
-              >
-                Vol 10yr{getSortIndicator('vol10')}
-              </th>
-              <th
-                onClick={() => handleSort('vol15')}
-                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd' }}
-              >
-                Vol 15yr{getSortIndicator('vol15')}
-              </th>
-              <th
-                onClick={() => handleSort('sharpe5')}
-                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd' }}
-              >
-                Sharpe 5yr{getSortIndicator('sharpe5')}
-              </th>
-              <th
-                onClick={() => handleSort('sharpe10')}
-                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd' }}
-              >
-                Sharpe 10yr{getSortIndicator('sharpe10')}
-              </th>
-              <th
-                onClick={() => handleSort('sharpe15')}
-                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px' }}
-              >
-                Sharpe 15yr{getSortIndicator('sharpe15')}
-              </th>
+              <th onClick={() => handleSort('name')} style={{ ...headerStyle, textAlign: 'left' }}>Name{getSortIndicator('name')}</th>
+              <th onClick={() => handleSort('cagr5')} style={headerStyle}>CAGR 5yr{getSortIndicator('cagr5')}</th>
+              <th onClick={() => handleSort('cagr10')} style={headerStyle}>CAGR 10yr{getSortIndicator('cagr10')}</th>
+              <th onClick={() => handleSort('cagr15')} style={headerStyle}>CAGR 15yr{getSortIndicator('cagr15')}</th>
+              <th onClick={() => handleSort('vol5')} style={headerStyle}>Vol 5yr{getSortIndicator('vol5')}</th>
+              <th onClick={() => handleSort('vol10')} style={headerStyle}>Vol 10yr{getSortIndicator('vol10')}</th>
+              <th onClick={() => handleSort('vol15')} style={headerStyle}>Vol 15yr{getSortIndicator('vol15')}</th>
+              <th onClick={() => handleSort('sharpe5')} style={headerStyle}>Sharpe 5yr{getSortIndicator('sharpe5')}</th>
+              <th onClick={() => handleSort('sharpe10')} style={headerStyle}>Sharpe 10yr{getSortIndicator('sharpe10')}</th>
+              <th onClick={() => handleSort('sharpe15')} style={{ ...headerStyle, borderRight: 'none' }}>Sharpe 15yr{getSortIndicator('sharpe15')}</th>
             </tr>
           </thead>
           <tbody>
             {sortedPortfolios.map((portfolio) => (
-              <tr
-                key={portfolio.id}
-                onClick={() => handleRowClick(portfolio)}
-                style={{ cursor: 'pointer', borderBottom: '1px solid #eee', background: 'white' }}
-                onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-              >
-                <td style={{ padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.name}</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.cagr5.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.cagr10.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.cagr15.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.vol5.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.vol10.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.vol15.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.sharpe5.toFixed(2)}</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.sharpe10.toFixed(2)}</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderBottom: '1px solid #ccc' }}>{portfolio.sharpe15.toFixed(2)}</td>
+              <tr key={portfolio.id} onClick={() => handleRowClick(portfolio)} style={{ cursor: 'pointer' }} onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'} onMouseLeave={(e) => e.currentTarget.style.background = 'white'}>
+                <td style={{ ...cellStyle, textAlign: 'left' }}>{portfolio.name}</td>
+                <td style={cellNumStyle}>{portfolio.cagr5.toFixed(2)}%</td>
+                <td style={cellNumStyle}>{portfolio.cagr10.toFixed(2)}%</td>
+                <td style={cellNumStyle}>{portfolio.cagr15.toFixed(2)}%</td>
+                <td style={cellNumStyle}>{portfolio.vol5.toFixed(2)}%</td>
+                <td style={cellNumStyle}>{portfolio.vol10.toFixed(2)}%</td>
+                <td style={cellNumStyle}>{portfolio.vol15.toFixed(2)}%</td>
+                <td style={cellNumStyle}>{portfolio.sharpe5.toFixed(2)}</td>
+                <td style={cellNumStyle}>{portfolio.sharpe10.toFixed(2)}</td>
+                <td style={{ ...cellNumStyle, borderRight: 'none' }}>{portfolio.sharpe15.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
