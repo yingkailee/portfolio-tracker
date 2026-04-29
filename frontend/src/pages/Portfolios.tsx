@@ -133,64 +133,64 @@ export default function Portfolios() {
       ) : (
         <table className="table" style={{ width: '100%' }}>
           <thead>
-            <tr>
+            <tr style={{ borderBottom: '2px solid #ddd' }}>
               <th
                 onClick={() => handleSort('name')}
-                style={{ cursor: 'pointer', textAlign: 'left' }}
+                style={{ cursor: 'pointer', textAlign: 'left', padding: '12px 8px' }}
               >
                 Name{getSortIndicator('name')}
               </th>
               <th
                 onClick={() => handleSort('cagr5')}
-                style={{ cursor: 'pointer', textAlign: 'right' }}
+                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px' }}
               >
                 CAGR 5yr{getSortIndicator('cagr5')}
               </th>
               <th
                 onClick={() => handleSort('cagr10')}
-                style={{ cursor: 'pointer', textAlign: 'right' }}
+                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px' }}
               >
                 CAGR 10yr{getSortIndicator('cagr10')}
               </th>
               <th
                 onClick={() => handleSort('cagr15')}
-                style={{ cursor: 'pointer', textAlign: 'right' }}
+                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px' }}
               >
                 CAGR 15yr{getSortIndicator('cagr15')}
               </th>
               <th
                 onClick={() => handleSort('vol5')}
-                style={{ cursor: 'pointer', textAlign: 'right' }}
+                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px' }}
               >
                 Vol 5yr{getSortIndicator('vol5')}
               </th>
               <th
                 onClick={() => handleSort('vol10')}
-                style={{ cursor: 'pointer', textAlign: 'right' }}
+                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px' }}
               >
                 Vol 10yr{getSortIndicator('vol10')}
               </th>
               <th
                 onClick={() => handleSort('vol15')}
-                style={{ cursor: 'pointer', textAlign: 'right' }}
+                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px' }}
               >
                 Vol 15yr{getSortIndicator('vol15')}
               </th>
               <th
                 onClick={() => handleSort('sharpe5')}
-                style={{ cursor: 'pointer', textAlign: 'right' }}
+                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px' }}
               >
                 Sharpe 5yr{getSortIndicator('sharpe5')}
               </th>
               <th
                 onClick={() => handleSort('sharpe10')}
-                style={{ cursor: 'pointer', textAlign: 'right' }}
+                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px' }}
               >
                 Sharpe 10yr{getSortIndicator('sharpe10')}
               </th>
               <th
                 onClick={() => handleSort('sharpe15')}
-                style={{ cursor: 'pointer', textAlign: 'right' }}
+                style={{ cursor: 'pointer', textAlign: 'right', padding: '12px 8px' }}
               >
                 Sharpe 15yr{getSortIndicator('sharpe15')}
               </th>
@@ -201,18 +201,20 @@ export default function Portfolios() {
               <tr
                 key={portfolio.id}
                 onClick={() => handleRowClick(portfolio)}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', borderBottom: '1px solid #eee', background: 'white' }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
               >
-                <td>{portfolio.name}</td>
-                <td style={{ textAlign: 'right' }}>{portfolio.cagr5.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right' }}>{portfolio.cagr10.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right' }}>{portfolio.cagr15.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right' }}>{portfolio.vol5.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right' }}>{portfolio.vol10.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right' }}>{portfolio.vol15.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right' }}>{portfolio.sharpe5.toFixed(2)}</td>
-                <td style={{ textAlign: 'right' }}>{portfolio.sharpe10.toFixed(2)}</td>
-                <td style={{ textAlign: 'right' }}>{portfolio.sharpe15.toFixed(2)}</td>
+                <td style={{ padding: '12px 8px' }}>{portfolio.name}</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px' }}>{portfolio.cagr5.toFixed(2)}%</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px' }}>{portfolio.cagr10.toFixed(2)}%</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px' }}>{portfolio.cagr15.toFixed(2)}%</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px' }}>{portfolio.vol5.toFixed(2)}%</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px' }}>{portfolio.vol10.toFixed(2)}%</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px' }}>{portfolio.vol15.toFixed(2)}%</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px' }}>{portfolio.sharpe5.toFixed(2)}</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px' }}>{portfolio.sharpe10.toFixed(2)}</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px' }}>{portfolio.sharpe15.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
