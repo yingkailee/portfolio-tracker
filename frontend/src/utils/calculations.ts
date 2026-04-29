@@ -33,7 +33,7 @@ export async function calculatePortfolioYield(
   return performances.reduce((sum, { ticker, cagr }) => {
     const weight = allocations[ticker] || 0;
     return sum + (weight * cagr);
-  }, 0);
+  }, 0) * 100;
 }
 
 export function validateAllocations(allocations: Allocations): boolean {

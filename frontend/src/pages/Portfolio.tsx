@@ -135,7 +135,10 @@ export default function Portfolio() {
   return (
     <div className="container">
       <div className="flex-between" style={{ marginBottom: 20 }}>
-        <h1>Portfolio Allocation</h1>
+        <div className="flex-gap">
+          <Link to="/portfolios" className="btn">← Portfolios</Link>
+          <h1>Portfolio Allocation</h1>
+        </div>
         <div className="flex-gap">
           <Link to="/calculator" className="btn">Go to Calculator →</Link>
           <AuthButton />

@@ -93,7 +93,7 @@ export default function Calculator() {
     setSliderTouched(false);
     setYieldLoading(true);
     const y = await calculatePortfolioYield(allocs, cagrPeriod);
-    setYield(y * 100);
+    setYield(y);
     setYieldLoading(false);
     localStorage.setItem('selectedPortfolioId', p.id.toString());
   };
