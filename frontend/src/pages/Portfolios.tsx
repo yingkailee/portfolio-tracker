@@ -205,15 +205,15 @@ export default function Portfolios() {
                 onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'}
                 onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
               >
-                <td style={{ padding: '12px 8px', borderRight: '1px solid #ddd' }}>{portfolio.name}</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd' }}>{portfolio.cagr5.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd' }}>{portfolio.cagr10.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd' }}>{portfolio.cagr15.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd' }}>{portfolio.vol5.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd' }}>{portfolio.vol10.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd' }}>{portfolio.vol15.toFixed(2)}%</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd' }}>{portfolio.sharpe5.toFixed(2)}</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd' }}>{portfolio.sharpe10.toFixed(2)}</td>
+                <td style={{ padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.name}</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.cagr5.toFixed(2)}%</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.cagr10.toFixed(2)}%</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.cagr15.toFixed(2)}%</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.vol5.toFixed(2)}%</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.vol10.toFixed(2)}%</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.vol15.toFixed(2)}%</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.sharpe5.toFixed(2)}</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.sharpe10.toFixed(2)}</td>
                 <td style={{ textAlign: 'right', padding: '12px 8px' }}>{portfolio.sharpe15.toFixed(2)}</td>
               </tr>
             ))}
