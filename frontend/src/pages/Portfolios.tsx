@@ -214,7 +214,7 @@ export default function Portfolios() {
                 <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.vol15.toFixed(2)}%</td>
                 <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.sharpe5.toFixed(2)}</td>
                 <td style={{ textAlign: 'right', padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' }}>{portfolio.sharpe10.toFixed(2)}</td>
-                <td style={{ textAlign: 'right', padding: '12px 8px' }}>{portfolio.sharpe15.toFixed(2)}</td>
+                <td style={{ textAlign: 'right', padding: '12px 8px', borderBottom: '1px solid #ccc' }}>{portfolio.sharpe15.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
