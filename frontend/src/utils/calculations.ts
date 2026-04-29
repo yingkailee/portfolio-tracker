@@ -65,7 +65,7 @@ export async function calculatePortfolioVolatility(
   return performances.reduce((sum, { ticker, vol }) => {
     const weight = allocations[ticker] || 0;
     return sum + (weight * vol);
-  }, 0);
+  }, 0) * 100;
 }
 
 export function validateAllocations(allocations: Allocations): boolean {
