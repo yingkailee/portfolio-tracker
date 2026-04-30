@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import type { Portfolio } from '../types';
 import { fetchPortfolios, getStoredPortfolios, getUserId } from '../api';
 import { isLoggedIn } from '../utils/auth';
-import { calculatePortfolioYield, calculatePortfolioVolatility, calculatePortfolioSharpe } from '../utils/calculations';
+import { calculatePortfolioMetrics } from '../utils/calculations';
 import AuthButton from '../components/AuthButton';
 
 const cellStyle = { padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' };
@@ -39,24 +39,13 @@ export default function Portfolios() {
     const loadPortfolios = async (p: Portfolio[]) => {
       const withMetrics: PortfolioWithMetrics[] = await Promise.all(
         p.map(async (portfolio) => {
-          let cagr5 = 0, cagr10 = 0, cagr15 = 0;
-          let vol5 = 0, vol10 = 0, vol15 = 0;
-          let sharpe5 = 0, sharpe10 = 0, sharpe15 = 0;
           try {
             const allocs = JSON.parse(portfolio.allocations);
-            cagr5 = await calculatePortfolioYield(allocs, 5);
-            cagr10 = await calculatePortfolioYield(allocs, 10);
-            cagr15 = await calculatePortfolioYield(allocs, 15);
-            vol5 = await calculatePortfolioVolatility(allocs, 5);
-            vol10 = await calculatePortfolioVolatility(allocs, 10);
-            vol15 = await calculatePortfolioVolatility(allocs, 15);
-            sharpe5 = await calculatePortfolioSharpe(allocs, 5);
-            sharpe10 = await calculatePortfolioSharpe(allocs, 10);
-            sharpe15 = await calculatePortfolioSharpe(allocs, 15);
+            const metrics = await calculatePortfolioMetrics(allocs);
+            return { ...portfolio, ...metrics };
           } catch {
-            // use default values
+            return { ...portfolio, cagr5: 0, cagr10: 0, cagr15: 0, vol5: 0, vol10: 0, vol15: 0, sharpe5: 0, sharpe10: 0, sharpe15: 0 };
           }
-          return { ...portfolio, cagr5, cagr10, cagr15, vol5, vol10, vol15, sharpe5, sharpe10, sharpe15 };
         })
       );
       setPortfolios(withMetrics);
