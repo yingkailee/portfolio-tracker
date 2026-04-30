@@ -10,6 +10,12 @@ const navStyle = {
   background: '#fafafa',
 };
 
+const navCenterStyle = {
+  position: 'absolute' as const,
+  left: '50%',
+  transform: 'translateX(-50%)',
+};
+
 const linksStyle = {
   display: 'flex',
   gap: '12px',
@@ -33,8 +39,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <nav style={navStyle}>
-        <div style={linksStyle}>
+      <nav style={{ ...navStyle, position: 'relative' }}>
+        <div style={{ width: 80 }} />
+        <div style={{ ...linksStyle, ...navCenterStyle }}>
           <Link to="/portfolios" style={linkStyle(isPortfolios)}>
             Portfolios
           </Link>
