@@ -35,11 +35,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <>
       <nav style={navStyle}>
         <div style={linksStyle}>
-          <Link to="/portfolio" style={linkStyle(isPortfolio)}>
-            Allocation
-          </Link>
           <Link to="/portfolios" style={linkStyle(isPortfolios)}>
             Portfolios
+          </Link>
+          <Link to="/portfolio" style={linkStyle(isPortfolio)}>
+            Allocation
           </Link>
           <Link to="/calculator" style={linkStyle(isCalculator)}>
             Calculator
