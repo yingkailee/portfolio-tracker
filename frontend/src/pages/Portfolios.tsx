@@ -1,10 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import type { Portfolio } from '../types';
 import { fetchPortfolios, getStoredPortfolios, getUserId } from '../api';
 import { isLoggedIn } from '../utils/auth';
 import { calculatePortfolioMetrics } from '../utils/calculations';
-import AuthButton from '../components/AuthButton';
 
 const cellStyle = { padding: '12px 8px', borderRight: '1px solid #ddd', borderBottom: '1px solid #ccc' };
 const cellNumStyle = { ...cellStyle, textAlign: 'right' as const };
@@ -110,16 +109,7 @@ export default function Portfolios() {
 
   return (
     <div className="container">
-      <div className="flex-between" style={{ marginBottom: 20 }}>
-        <div className="flex-gap">
-          <h1>Portfolios</h1>
-        </div>
-        <div className="flex-gap">
-          <Link to="/portfolio" className="btn">Allocation →</Link>
-          <Link to="/calculator" className="btn">Calculator →</Link>
-          <AuthButton />
-        </div>
-      </div>
+      <h1 style={{ marginBottom: 20 }}>Portfolios</h1>
 
       {loading ? (
         <div style={{ padding: 20 }}>Loading...</div>

@@ -1,12 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, Line } from 'recharts';
 import type { CalculationResponse, Portfolio } from '../types';
 import { calculateProjection, fetchPortfolios, getStoredPortfolios, storePortfolio, getUserId, DEFAULT_ALLOCATIONS } from '../api';
 import { calculatePortfolioYield, type CagrPeriod } from '../utils/calculations';
 import { isLoggedIn } from '../utils/auth';
 import Dropdown from '../components/Dropdown';
-import AuthButton from '../components/AuthButton';
 
 const fmt = (v: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v);
 const fmtCompact = (v: number) => {
@@ -118,13 +116,7 @@ export default function Calculator() {
 
   return (
     <div className="container">
-      <div className="flex-between" style={{ marginBottom: 20 }}>
-        <h1>Calculator</h1>
-        <div className="flex-gap">
-          <Link to="/portfolio" className="btn">← Portfolio</Link>
-          <AuthButton />
-        </div>
-      </div>
+      <h1 style={{ marginBottom: 20 }}>Calculator</h1>
 
       <div style={{ marginBottom: 20 }}>
         <label>Portfolio: </label>

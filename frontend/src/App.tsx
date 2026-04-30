@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './styles.css';
+import Layout from './components/Layout';
 
 const Portfolio = lazy(() => import('./pages/Portfolio'));
 const Portfolios = lazy(() => import('./pages/Portfolios'));
@@ -12,6 +13,14 @@ function Loading() {
   return <div style={{ padding: 20 }}>Loading...</div>;
 }
 
+function MainLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <Layout>
+      {children}
+    </Layout>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -20,9 +29,9 @@ export default function App() {
           <Route path="/" element={<Navigate to="/portfolio" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/portfolios" element={<Portfolios />} />
-          <Route path="/calculator" element={<Calculator />} />
+          <Route path="/portfolio" element={<MainLayout><Portfolio /></MainLayout>} />
+          <Route path="/portfolios" element={<MainLayout><Portfolios /></MainLayout>} />
+          <Route path="/calculator" element={<MainLayout><Calculator /></MainLayout>} />
         </Routes>
       </Suspense>
     </BrowserRouter>

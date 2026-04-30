@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import type { Fund, Allocations, Portfolio } from '../types';
 import { fetchFunds, fetchPortfolios, createPortfolio, savePortfolio, deleteAllPortfolios, getStoredPortfolios, storePortfolio, deleteAllStoredPortfolios, getUserId, DEFAULT_ALLOCATIONS } from '../api';
 import { isLoggedIn } from '../utils/auth';
-import AuthButton from '../components/AuthButton';
 import AllocationEditor from '../components/AllocationEditor';
 import AllocationChart from '../components/AllocationChart';
 import FundPerformanceDisplay from '../components/FundPerformanceDisplay';
@@ -134,16 +133,7 @@ export default function Portfolio() {
 
   return (
     <div className="container">
-      <div className="flex-between" style={{ marginBottom: 20 }}>
-        <div className="flex-gap">
-          <Link to="/portfolios" className="btn">← Portfolios</Link>
-          <h1>Portfolio Allocation</h1>
-        </div>
-        <div className="flex-gap">
-          <Link to="/calculator" className="btn">Go to Calculator →</Link>
-          <AuthButton />
-        </div>
-      </div>
+      <h1 style={{ marginBottom: 20 }}>Portfolio Allocation</h1>
 
       {loading ? (
         <div className="container" style={{ textAlign: 'center', padding: 50 }}>
