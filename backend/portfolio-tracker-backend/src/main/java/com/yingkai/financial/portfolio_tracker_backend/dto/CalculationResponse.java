@@ -13,4 +13,5 @@ public class CalculationResponse {
     private Double finalNetWorth;
     private Double additionalInvestments;
     private Double totalGrowth;
+    private Double inflationAdjustedNetWorth;
 }

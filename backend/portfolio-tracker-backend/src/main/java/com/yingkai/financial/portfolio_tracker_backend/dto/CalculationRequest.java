@@ -10,4 +10,5 @@ public class CalculationRequest {
     private Double yearlySavings;
     private Integer timeHorizonYears;
     private Double portfolioYield;
+    private Double inflationRate;
 }

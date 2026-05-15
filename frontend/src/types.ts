@@ -12,6 +12,7 @@ export interface CalculationRequest {
   yearlySavings: number;
   timeHorizonYears: number;
   portfolioYield: number;
+  inflationRate: number;
 }
 
 export interface CalculationResponse {
@@ -22,6 +23,7 @@ export interface CalculationResponse {
   finalNetWorth: number;
   additionalInvestments: number;
   totalGrowth: number;
+  inflationAdjustedNetWorth: number;
 }
 
 export type Allocations = Record<string, number>;

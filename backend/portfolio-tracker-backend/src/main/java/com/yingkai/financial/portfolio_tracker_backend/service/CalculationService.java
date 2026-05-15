@@ -15,11 +15,14 @@ public class CalculationService {
         double yearlySavings = request.getYearlySavings();
         int years = request.getTimeHorizonYears();
         double annualYield = request.getPortfolioYield() / 100.0;
+        double annualInflation = request.getInflationRate() != null ? request.getInflationRate() / 100.0 : 0.0;
         double additionalInvestments = yearlySavings * years;
 
         for (int i = 0; i < years; i++) {
             netWorth = (netWorth + yearlySavings) * (1 + annualYield);
         }
+
+        double inflationAdjustedNetWorth = netWorth / Math.pow(1 + annualInflation, years);
 
         return new CalculationResponse(
                 request.getInitialCapital(),
@@ -28,7 +31,8 @@ public class CalculationService {
                 request.getPortfolioYield(),
                 Math.round(netWorth * 100.0) / 100.0,
                 Math.round(additionalInvestments * 100.0) / 100.0,
-                Math.round((netWorth - request.getInitialCapital() - additionalInvestments) * 100.0) / 100.0
+                Math.round((netWorth - request.getInitialCapital() - additionalInvestments) * 100.0) / 100.0,
+                Math.round(inflationAdjustedNetWorth * 100.0) / 100.0
         );
     }
 

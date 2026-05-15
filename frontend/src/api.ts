@@ -95,6 +95,7 @@ export async function calculateProjection(request: {
   yearlySavings: number;
   timeHorizonYears: number;
   portfolioYield: number;
+  inflationRate: number;
 }): Promise<CalculationResponse> {
   const res = await fetch(`${API_BASE}/calculate`, {
     method: 'POST',

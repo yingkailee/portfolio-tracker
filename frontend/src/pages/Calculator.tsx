@@ -32,6 +32,7 @@ export default function Calculator() {
   const [savings, setSavings] = useState(20000);
   const [years, setYears] = useState(20);
   const [yield_, setYield] = useState(10.5);
+  const [inflation, setInflation] = useState(3);
   const [cagrPeriod, setCagrPeriod] = useState<CagrPeriod>(15);
   const [result, setResult] = useState<CalculationResponse | null>(null);
   const [yieldLoading, setYieldLoading] = useState(false);
@@ -110,9 +111,9 @@ export default function Calculator() {
   const yieldLabel = sliderTouched || manualYield ? "Selected Yield" : "Portfolio Yield";
 
   useEffect(() => {
-    const id = setTimeout(() => calculateProjection({ initialCapital: capital, yearlySavings: savings, timeHorizonYears: years, portfolioYield: yield_ }).then(setResult), 300);
+    const id = setTimeout(() => calculateProjection({ initialCapital: capital, yearlySavings: savings, timeHorizonYears: years, portfolioYield: yield_, inflationRate: inflation }).then(setResult), 300);
     return () => clearTimeout(id);
-  }, [capital, savings, years, yield_]);
+  }, [capital, savings, years, yield_, inflation]);
 
   return (
     <div className="container">
@@ -159,6 +160,15 @@ export default function Calculator() {
             step={0.5} 
             format={v => `${v.toFixed(2)}%`} 
           />
+      <Slider 
+            label="Inflation" 
+            value={inflation} 
+            onChange={setInflation} 
+            min={0} 
+            max={10} 
+            step={0.5} 
+            format={v => `${v.toFixed(2)}%`} 
+          />
 
       {result && (
         <div className="alert-result">
@@ -178,8 +188,16 @@ export default function Calculator() {
                 <span style={{ color: '#2563eb' }}>{fmt(result.totalGrowth)}</span>
               </div>
               <div className="result-total">
-                <span className="result-label">Final Net Worth: </span>
-                <strong style={{ color: '#16a34a', fontSize: '24px' }}>{fmt(result.finalNetWorth)}</strong>
+                <div className="result-row" style={{ marginBottom: 0 }}>
+                  <span className="result-label">Final Net Worth: </span>
+                  <strong style={{ color: '#16a34a', fontSize: '24px' }}>{fmt(result.finalNetWorth)}</strong>
+                </div>
+                {result.inflationAdjustedNetWorth != null && (
+                  <div className="result-row" style={{ marginBottom: 0 }}>
+                    <span className="result-label">After Inflation: </span>
+                    <strong style={{ color: '#16a34a', fontSize: '24px' }}>{fmt(result.inflationAdjustedNetWorth)}</strong>
+                  </div>
+                )}
               </div>
             </div>
 
