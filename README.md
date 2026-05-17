@@ -12,6 +12,24 @@ docker compose up --build
 - Backend: http://localhost:8080
 - Uses H2 in-memory database (no setup required)
 
+## Local Development (without Docker)
+
+1. **Supabase (default):** Add a `.env` file in `backend/portfolio-tracker-backend/` with your database credentials, then:
+   ```bash
+   cd backend/portfolio-tracker-backend && ./mvnw spring-boot:run
+   ```
+
+2. **H2 in-memory (no setup needed):**
+   ```bash
+   cd backend/portfolio-tracker-backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=h2
+   ```
+   H2 console available at `/h2-console` when using this profile.
+
+Start the frontend separately:
+```bash
+cd frontend && npm run dev
+```
+
 ## Features
 
 - Create portfolios with custom fund allocations
